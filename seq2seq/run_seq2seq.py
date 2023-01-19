@@ -177,17 +177,17 @@ def main() -> None:
             use_auth_token=True if model_args.use_auth_token else None,
         )
 
-        try:
-            # Attempt to parallelise the model
-            rank = torch.distributed.get_rank()
-            device_id = rank % torch.cuda.device_count()
-            model = model.to(device_id)
-            model = DistributedDataParallel(model, device_ids=[device_id])
-        except Exception as e:
-            print("The following error was thrown when parallelising the model:")
-            print(e)
-            print("Full traceback:")
-            print(traceback.format_exc())
+#         try:
+#             # Attempt to parallelise the model
+#             rank = torch.distributed.get_rank()
+#             device_id = rank % torch.cuda.device_count()
+#             model = model.to(device_id)
+#             model = DistributedDataParallel(model, device_ids=[device_id])
+#         except Exception as e:
+#             print("The following error was thrown when parallelising the model:")
+#             print(e)
+#             print("Full traceback:")
+#             print(traceback.format_exc())
 
         if isinstance(model, T5ForConditionalGeneration):
             model.resize_token_embeddings(len(tokenizer))
