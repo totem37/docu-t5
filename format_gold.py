@@ -2,6 +2,7 @@ from seq2seq.eval_spider.process_sql import get_schema, get_sql, Schema
 
 import json
 import os
+import sys
 
 def format_gold(json_filename):
     """
@@ -39,6 +40,13 @@ def format_sql_field(json_filename, db_dir):
 if __name__ == "__main__":
     json_filename = "dataset_files/ori_dataset/spider_dk/spider-DK.json"
     db_dir = "dataset_files/ori_dataset/spider_dk/database"
+    if len(sys.argv) == 3:
+        json_filename = sys.argv[1]
+        db_dir = sys.argv[2]
+    else:
+        print("You can pass an input file & database directory as arguments to this script. For example:")
+        print("python format_gold.py dataset_files/ori_dataset/spider_dates/dev_spider_dates.json dataset_files/ori_dataset/spider_dates/database")
+        print("An input file and database directory were not passed in. Defaulting to Spider-DK.")
     format_sql_field(json_filename, db_dir)
     format_gold(json_filename)
 
