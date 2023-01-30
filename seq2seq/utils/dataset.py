@@ -154,8 +154,6 @@ class DataArguments:
             "cosql": "./seq2seq/datasets/cosql",
             "datasaur": "./seq2seq/datasets/datasaur",
             "spider_realistic": "./seq2seq/datasets/spider_realistic",
-            "spider_syn": "./seq2seq/datasets/spider_syn",
-            "spider_dk": "./seq2seq/datasets/spider_dk"
 
         },
         metadata={"help": "Paths of the dataset modules."},
