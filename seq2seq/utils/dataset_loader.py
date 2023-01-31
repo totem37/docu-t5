@@ -79,6 +79,13 @@ def load_dataset(
         path=data_args.metric_paths["spider_dates"], config_name=data_args.metric_config, test_suite_db_dir=data_args.test_suite_db_dir
     )
 
+    _spider_desc_dataset_dict : Callable[[], DatasetDict] = lambda: datasets.load.load_dataset(
+        path=data_args.dataset_paths['spider_desc'], cache_dir=model_args.cache_dir
+    )
+    _spider_desc_metric: Callable[[], Metric] = lambda: datasets.load.load_metric(
+        path=data_args.metric_paths["spider_desc"], config_name=data_args.metric_config, test_suite_db_dir=data_args.test_suite_db_dir
+    )
+
     _cosql_dataset_dict: Callable[[], DatasetDict] = lambda: datasets.load.load_dataset(
         path=data_args.dataset_paths["cosql"], cache_dir=model_args.cache_dir
     )
@@ -148,6 +155,14 @@ def load_dataset(
         metric = _spider_dates_metric()
         dataset_splits = prepare_splits(
             dataset_dict= _spider_dates_dataset_dict(),
+            add_serialized_schema=_spider_add_serialized_schema,
+            pre_process_function=_spider_pre_process_function,
+            **_prepare_splits_kwargs,
+        )
+    elif data_args.dataset == "spider_desc":
+        metric = _spider_desc_metric()
+        dataset_splits = prepare_splits(
+            dataset_dict= _spider_desc_dataset_dict(),
             add_serialized_schema=_spider_add_serialized_schema,
             pre_process_function=_spider_pre_process_function,
             **_prepare_splits_kwargs,

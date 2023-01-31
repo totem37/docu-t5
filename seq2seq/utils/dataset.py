@@ -143,7 +143,7 @@ class DataTrainingArguments:
 @dataclass
 class DataArguments:
     dataset: str = field(
-        metadata={"help": "The dataset to be used. Choose between ``spider``, ``cosql``, or ``cosql+spider``, or ``spider_realistic``, or ``spider_syn``, or ``spider_dk``, or ``spider_dates``."},
+        metadata={"help": "The dataset to be used. Choose between ``spider``, ``cosql``, or ``cosql+spider``, or ``spider_realistic``, or ``spider_syn``, or ``spider_dk``, or ``spider_dates``, or ``spider_desc``."},
     )
     dataset_paths: Dict[str, str] = field(
         default_factory=lambda: {
@@ -151,6 +151,7 @@ class DataArguments:
             "spider_dk": "./seq2seq/datasets/spider_dk",
             "spider_syn": "./seq2seq/datasets/spider_syn",
             "spider_dates": "./seq2seq/datasets/spider_dates",
+            "spider_desc": "./seq2seq/datasets/spider_desc",
             "cosql": "./seq2seq/datasets/cosql",
             "datasaur": "./seq2seq/datasets/datasaur",
             "spider_realistic": "./seq2seq/datasets/spider_realistic",
@@ -169,6 +170,7 @@ class DataArguments:
             "spider_dk":"./seq2seq/metrics/spider",
             "spider_syn":"./seq2seq/metrics/spider",
             "spider_dates": "./seq2seq/metrics/spider",
+            "spider_desc": "./seq2seq/metrics/spider",
             "cosql": "./seq2seq/metrics/cosql",
             "datasaur": "./seq2seq/metrics/datasaur",
             "spider_realistic" : "./seq2seq/metrics/spider",
