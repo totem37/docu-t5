@@ -12,7 +12,7 @@
     "normalize_query": true,
     "target_with_db_id": true,
     "remove_unused_columns": false,
-    "output_dir": "train/DocuT5-Small-Desc",
+    "output_dir": "train/DocuT5-Small-RSD",
     "overwrite_output_dir": true,
     "cache_dir": "/transformers_cache",
     "do_train": true,
