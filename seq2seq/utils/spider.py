@@ -1,98 +1,21 @@
 import json
-import nltk
 import numpy as np
-import re
 from datasets.arrow_dataset import Dataset
-from num2words import num2words
-from sacremoses import MosesDetokenizer
 from seq2seq.utils.dataset import DataTrainingArguments, normalize, serialize_schema
 from seq2seq.utils.trainer import Seq2SeqTrainer, EvalPrediction
-from text2digits import text2digits
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 from typing import Optional
 
 
 def numbers_to_text(question, mode='all'):
-    processed_words = []
-    question_involves_year = any([bool(w in question) for w in ["year", "month", "date", "before", "after", "born", "birth", "recent", "chronological", "youngest", "younger", "oldest", "older", "newest", "newer", "in", "during", "between"]])
-    tokenized_question = nltk.word_tokenize(question)
-    for word in tokenized_question:
-        try:
-            num = float(word)
-            if len(word) == 4 and question_involves_year and mode in ['all', 'year']:
-                num_words = num2words(num, to='year')
-            elif mode == 'all':
-                num_words = num2words(num)
-            processed_words.append(num_words)
-        except:
-            processed_words.append(word)
-    processed_input = MosesDetokenizer().detokenize(processed_words, return_str=True)
-    if processed_input != question:
-        print(f"Changed {question} to {processed_input}")
-    return processed_input
-
-def numbers_to_text(question, mode='all'):
-    nums = {
-        '1': 'one',
-        '2': 'two',
-        '3': 'three',
-        '4': 'four',
-        '5': 'five',
-        '6': 'six',
-        '7': 'seven',
-        '8': 'eight',
-        '9': 'nine',
-        '0': 'zero'
-    }
-    processed_question = ""
-    for i, c in enumerate(question):
-        if c in nums.keys():
-            processed_question += nums[c]
-            if i < len(question) - 1:
-                if question[i+1] in nums.keys():
-                    processed_question += '-'
-        else:
-            processed_question += c
-    if processed_question != question:
-        print(f"Changed {question} to {processed_question}")
-    return processed_question
+    # This didn't help so the implementation was removed
+    print(f"WARNING: convert_numbers_to_text is set to {mode} in the config, but this functionality is not implemented. Skipping this preprocessing step.")
+    return question
 
 
 def text_to_numbers(query):
-    t2d = text2digits.Text2Digits()
-    forbidden_char = '&'
-    processed_input = t2d.convert(query.replace('first', forbidden_char)).replace(forbidden_char, 'first')
-    if processed_input != query:
-        print(f"Changed {query} to {processed_input}")
-    return processed_input
-
-
-def text_to_numbers(query):
-    nums = {
-        'one': '1',
-        'two': '2',
-        'three': '3',
-        'four': '4',
-        'five': '5',
-        'six': '6',
-        'seven': '7',
-        'eight': '8',
-        'nine': '9',
-        'zero': '0'
-    }
-    # Skip table aliases
-    table_alias_end = 0
-    table_alias_match = re.search(rf'(?s:.*)as \S*', query, flags=re.IGNORECASE)
-    if table_alias_match:
-        table_alias_end = table_alias_match.span()[1] + 1
-
-    query_start = query[:table_alias_end]
-    processed_query = query[table_alias_end:]
-    for num in nums.keys():
-        processed_query = re.sub(num+'-', nums[num], processed_query)
-        processed_query = re.sub(num, nums[num], processed_query)
-    processed_query = query_start + processed_query
-    return processed_query
+    # This didn't help so the implementation was removed
+    return query
 
 
 def spider_get_input(
