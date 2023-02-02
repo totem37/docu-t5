@@ -215,6 +215,7 @@ def main() -> None:
             ),
             "ignore_pad_token_for_loss": data_training_args.ignore_pad_token_for_loss,
             "target_with_db_id": data_training_args.target_with_db_id,
+            "convert_numbers_to_text": data_training_args.convert_numbers_to_text,
         }
         #using spidertrainer as it is.
         if data_args.dataset.replace('-', '_') in ["spider", "spider_realistic", "spider_syn", "spider_dk", "spider_dates", "spider_desc"]:
