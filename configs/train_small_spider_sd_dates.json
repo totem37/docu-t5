@@ -1,6 +1,6 @@
 {
-    "run_name": "train-docut5-small-spider-datesl-sd-db",
-    "model_name_or_path": "t5-small",
+    "run_name": "train-docut5-small-spider-dates-sd-db",
+    "model_name_or_path": "totem37/DocuT5-Small-SD",
     "dataset": "spider_dates",
     "source_prefix": "",
     "schema_serialization_type": "peteshaw",
@@ -12,7 +12,7 @@
     "normalize_query": true,
     "target_with_db_id": true,
     "remove_unused_columns": false,
-    "output_dir": "train/DocuT5-Small-SD-DatesL",
+    "output_dir": "train/DocuT5-Small-SD-Dates",
     "overwrite_output_dir": true,
     "cache_dir": "/transformers_cache",
     "do_train": true,
