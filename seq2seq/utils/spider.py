@@ -1,7 +1,9 @@
 import json
+import nltk
 import numpy as np
 from datasets.arrow_dataset import Dataset
 from num2words import num2words
+from sacremoses import MosesDetokenizer
 from seq2seq.utils.dataset import DataTrainingArguments, normalize, serialize_schema
 from seq2seq.utils.trainer import Seq2SeqTrainer, EvalPrediction
 from text2digits import text2digits
@@ -9,22 +11,28 @@ from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 from typing import Optional
 
 
-def numbers_to_text(input):
+def numbers_to_text(question):
     processed_words = []
-    for word in input.split():
+    question_involves_year = any([bool(w in question) for w in ["year", "month", "date", "before", "after", "born", "birth", "recent", "chronological", "youngest", "younger", "oldest", "older", "newest", "newer", "in", "during", "between"]])
+    tokenized_question = nltk.word_tokenize(question)
+    for word in tokenized_question:
         try:
             num = float(word)
-            num_words = num2words(num)
+            if len(word) == 4 and question_involves_year:
+                num_words = num2words(num, to='year')
+            else:
+                num_words = num2words(num)
+            print(word, num_words)
             processed_words.append(num_words)
         except:
             processed_words.append(word)
-    processed_input = ' '.join(processed_words)
+    processed_input = MosesDetokenizer().detokenize(processed_words, return_str=True)
     return processed_input
 
 
-def text_to_numbers(input):
+def text_to_numbers(query):
     t2d = text2digits.Text2Digits()
-    processed_input = t2d.convert(input)
+    processed_input = t2d.convert(query)
     return processed_input
 
 
@@ -34,11 +42,11 @@ def spider_get_input(
     prefix: str,
     convert_numbers_to_text: Optional[bool],
 ) -> str:
-    input =  prefix + question.strip() + " " + serialized_schema.strip()
-    convert_numbers_to_text = True
+    question_text = question.strip()
     if convert_numbers_to_text:
-        input = numbers_to_text(input)
-    return input
+        question_text = numbers_to_text(question_text)
+    inp =  prefix + question_text + " " + serialized_schema.strip()
+    return inp
 
 
 def spider_get_target(
