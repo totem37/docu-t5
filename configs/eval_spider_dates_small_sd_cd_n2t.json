@@ -10,7 +10,7 @@
     "schema_serialization_with_db_description": true,
     "normalize_query": true,
     "target_with_db_id": true,
-    "convert_numbers_to_text": true,
+    "convert_numbers_to_text": "all",
     "output_dir": "./experiment/docut5-spider-dates-05-02-2023",
     "cache_dir": "/transformers_cache",
     "do_train": false,

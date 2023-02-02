@@ -134,7 +134,7 @@ class DataTrainingArguments:
         default=True,
         metadata={"help": "Whether or not to add the database id to the target. Needed for Picard."},
     )
-    convert_numbers_to_text: bool = field(default=False, metadata={"help": "Whether to preprocess numbers into text."})
+    convert_numbers_to_text: str = field(default=False, metadata={"help": 'Whether to preprocess numbers into text. "all" changes all numbers, "year" changes only years'})
 
     def __post_init__(self):
         if self.val_max_target_length is None:
