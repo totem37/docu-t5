@@ -1,18 +1,44 @@
 import json
 import numpy as np
-from typing import Optional
 from datasets.arrow_dataset import Dataset
-from transformers.tokenization_utils_base import PreTrainedTokenizerBase
+from num2words import num2words
 from seq2seq.utils.dataset import DataTrainingArguments, normalize, serialize_schema
 from seq2seq.utils.trainer import Seq2SeqTrainer, EvalPrediction
+from text2digits import text2digits
+from transformers.tokenization_utils_base import PreTrainedTokenizerBase
+from typing import Optional
+
+
+def numbers_to_text(input):
+    processed_words = []
+    for word in input.split():
+        try:
+            num = float(word)
+            num_words = num2words(num)
+            processed_words.append(num_words)
+        except:
+            processed_words.append(word)
+    processed_input = ' '.join(processed_words)
+    return processed_input
+
+
+def text_to_numbers(input):
+    t2d = text2digits.Text2Digits()
+    processed_input = t2d.convert(input)
+    return processed_input
 
 
 def spider_get_input(
     question: str,
     serialized_schema: str,
     prefix: str,
+    convert_numbers_to_text: Optional[bool],
 ) -> str:
-    return prefix + question.strip() + " " + serialized_schema.strip()
+    input =  prefix + question.strip() + " " + serialized_schema.strip()
+    convert_numbers_to_text = True
+    if convert_numbers_to_text:
+        input = numbers_to_text(input)
+    return input
 
 
 def spider_get_target(
@@ -55,9 +81,10 @@ def spider_pre_process_function(
     tokenizer: PreTrainedTokenizerBase,
 ) -> dict:
     prefix = data_training_args.source_prefix if data_training_args.source_prefix is not None else ""
+    convert_numbers_to_text = data_training_args.convert_numbers_to_text
 
     inputs = [
-        spider_get_input(question=question, serialized_schema=serialized_schema, prefix=prefix)
+        spider_get_input(question=question, serialized_schema=serialized_schema, prefix=prefix, convert_numbers_to_text=convert_numbers_to_text)
         for question, serialized_schema in zip(batch["question"], batch["serialized_schema"])
     ]
 
@@ -119,6 +146,8 @@ class SpiderTrainer(Seq2SeqTrainer):
         ]
         predictions = self.tokenizer.batch_decode(predictions, skip_special_tokens=True)
         assert len(metas) == len(predictions)
+        if self.convert_numbers_to_text:
+            predictions = [text_to_numbers(p) for p in predictions]
         with open(f"{self.args.output_dir}/predictions_{stage}.json", "w") as f:
             json.dump(
                 [dict(**{"prediction": prediction}, **meta) for prediction, meta in zip(predictions, metas)],
