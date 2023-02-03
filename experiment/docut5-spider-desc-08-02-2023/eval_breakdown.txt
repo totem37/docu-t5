@@ -1,0 +1,101 @@
+0 extra pred: select t1.airportcode from airports as t1 join flights as t2 on t1.city = t2.airport
+0 extra gold: SELECT T1.AirportCode FROM AIRPORTS AS T1 JOIN FLIGHTS AS T2 ON T1.AirportCode  =  T2.DestAirport OR T1.AirportCode  =  T2.SourceAirport GROUP BY T1.AirportCode ORDER BY count(*) LIMIT 1
+
+1 medium pred: select count(*) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t3.age > 20
+1 medium gold: SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20
+
+2 easy pred: select avg(t2.date_left) from transcript_contents as t1 join student_enrolment as t2
+2 easy gold: SELECT avg(transcript_date) FROM Transcripts
+
+3 medium pred: select distinct t1.name from battle as t1 join battle as t2 on t1.id = t2.b
+3 medium gold: SELECT name FROM battle WHERE bulgarian_commander  =  'Kaloyan' AND latin_commander  =  'Baldwin I'
+
+4 medium pred: select t1.first_name, t1.last_name from players as t1 join players as t2 on t1.player_id = t2.player_id where t2.hand = 'L' order by t2.birth_date
+4 medium gold: SELECT first_name ,  last_name FROM players WHERE hand  =  'L' ORDER BY birth_date
+
+5 hard pred: select name from shop where shop_id not in (select shop_id from hiring)
+5 hard gold: SELECT name FROM shop WHERE shop_id NOT IN (SELECT shop_id FROM hiring)
+
+6 medium pred: select count(*) from airports as t1 join flights as t2 on t1.city = t2.destairport where t1.city = "Aberdeen"
+6 medium gold: SELECT count(*) FROM FLIGHTS AS T1 JOIN AIRPORTS AS T2 ON T1.DestAirport  =  T2.AirportCode WHERE T2.City  =  "Aberdeen"
+
+7 extra pred: select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker = "Fat" group by t1.countryid having count(*) > 3 union select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker = "Fiat"
+7 extra gold: select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  3 union select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country join model_list as t3 on t2.id  =  t3.maker where t3.model  =  'fiat';
+
+8 medium pred: select name, grade from highschooler
+8 medium gold: SELECT name ,  grade FROM Highschooler
+
+9 extra pred: select t1.fname, t1.age from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t3.petid = t2.petid where t3.pettype = 'cat'
+9 extra gold: SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')
+
+10 extra pred: select major, age from student where stuid not in (select stuid from has_pet where pettype = 'cat'
+10 extra gold: SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')
+
+11 easy pred: select count(*) from flights
+11 easy gold: SELECT count(*) FROM FLIGHTS
+
+12 hard pred: select winner_name from matches where winner_age = 2013 intersect select winner_name from matches where winner_age = 2016
+12 hard gold: SELECT winner_name FROM matches WHERE YEAR  =  2013 INTERSECT SELECT winner_name FROM matches WHERE YEAR  =  2016
+
+13 hard pred: select country_code from players group by country_code order by count(*) desc limit 1
+13 hard gold: SELECT country_code FROM players GROUP BY country_code ORDER BY count(*) DESC LIMIT 1
+
+14 hard pred: select count(*) from pets where sex = 'F' and stuid in (select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t3.stuid = t2.stuid
+14 hard gold: SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'
+
+15 medium pred: select t2.name from course_arrange as t1 join teacher as t2 on t1.teacher_id = t2.teacher_id group by t2.name having count(*) >= 2
+15 medium gold: SELECT T2.Name FROM course_arrange AS T1 JOIN teacher AS T2 ON T1.Teacher_ID  =  T2.Teacher_ID GROUP BY T2.Name HAVING COUNT(*)  >=  2
+
+16 medium pred: select count(*) from orchestra where major_record_format = 'CD' or major_record_format = 'DVD'
+16 medium gold: SELECT COUNT(*) FROM orchestra WHERE Major_Record_Format  =  "CD" OR Major_Record_Format  =  "DVD"
+
+17 extra pred: select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.player_id
+17 extra gold: SELECT T1.country_code ,  T1.first_name FROM players AS T1 JOIN matches AS T2 ON T1.player_id  =  T2.winner_id WHERE T2.tourney_name  =  'WTA Championships' INTERSECT SELECT T1.country_code ,  T1.first_name FROM players AS T1 JOIN matches AS T2 ON T1.player_id  =  T2.winner_id WHERE T2.tourney_name  =  'Australian Open'
+
+18 hard pred: select state from owners intersect select state from professionals
+18 hard gold: SELECT state FROM Owners INTERSECT SELECT state FROM Professionals
+
+19 medium pred: select t2.last_name from transcripts as t1 join
+19 medium gold: SELECT transcript_date FROM Transcripts ORDER BY transcript_date DESC LIMIT 1
+
+                     easy                 medium               hard                 extra                all                 
+count                2                    8                    5                    5                    20                  
+=====================   EXECUTION ACCURACY     =====================
+execution            0.500                0.750                0.600                0.000                0.500               
+
+====================== EXACT MATCHING ACCURACY =====================
+exact match          0.500                0.500                0.600                0.000                0.400               
+
+---------------------PARTIAL MATCHING ACCURACY----------------------
+select               1.000                1.000                1.000                1.000                1.000               
+select(no AGG)       1.000                1.000                1.000                1.000                1.000               
+where                0.000                1.000                0.500                0.000                0.625               
+where(no OP)         0.000                1.000                0.500                0.000                0.625               
+group(no Having)     0.000                1.000                1.000                1.000                1.000               
+group                0.000                1.000                1.000                1.000                1.000               
+order                0.000                1.000                1.000                0.000                1.000               
+and/or               1.000                0.875                0.800                0.800                0.850               
+IUEN                 0.000                0.000                0.500                0.000                0.333               
+keywords             0.000                1.000                1.000                0.000                0.818               
+---------------------- PARTIAL MATCHING RECALL ----------------------
+select               0.500                0.750                0.800                0.400                0.650               
+select(no AGG)       0.500                0.750                0.800                0.400                0.650               
+where                0.000                0.800                0.333                0.000                0.455               
+where(no OP)         0.000                0.800                0.333                0.000                0.455               
+group(no Having)     0.000                1.000                1.000                0.500                0.750               
+group                0.000                1.000                1.000                0.500                0.750               
+order                0.000                0.500                1.000                0.000                0.500               
+and/or               1.000                1.000                1.000                1.000                1.000               
+IUEN                 0.000                0.000                0.500                0.000                0.250               
+keywords             0.000                0.714                0.800                0.000                0.529               
+---------------------- PARTIAL MATCHING F1 --------------------------
+select               0.667                0.857                0.889                0.571                0.788               
+select(no AGG)       0.667                0.857                0.889                0.571                0.788               
+where                1.000                0.889                0.400                1.000                0.526               
+where(no OP)         1.000                0.889                0.400                1.000                0.526               
+group(no Having)     1.000                1.000                1.000                0.667                0.857               
+group                1.000                1.000                1.000                0.667                0.857               
+order                1.000                0.667                1.000                1.000                0.667               
+and/or               1.000                0.933                0.889                0.889                0.919               
+IUEN                 1.000                1.000                0.500                1.000                0.286               
+keywords             1.000                0.833                0.889                1.000                0.643               
