@@ -100,7 +100,7 @@ class SpiderDates(datasets.GeneratorBasedBuilder):
             datasets.SplitGenerator(
                 name = datasets.Split.TRAIN,
                 gen_kwargs={
-                    "data_filepaths":[downloaded_filepath + "/spider-dates/train_spider_dates_large.json"],
+                    "data_filepaths":[downloaded_filepath + "/spider-dates/train_spider_dates.json"],
                     "db_path": downloaded_filepath + "/spider-dates/database",
                 },
             ),
