@@ -1,0 +1,8 @@
+{
+    "eval_exact_match": 0.3564356435643564,
+    "eval_exec": 0.37623762376237624,
+    "eval_loss": 1.1095383167266846,
+    "eval_runtime": 214.6937,
+    "eval_samples": 101,
+    "eval_samples_per_second": 0.47
+}
