@@ -1,5 +1,5 @@
 {
-    "run_name": "spider-desc-samples-2-eval-small-all-desc",
+    "run_name": "spider-desc-eval-small-optimal",
     "model_name_or_path": "totem37/DocuT5-Small-SD",
     "dataset": "spider_desc",
     "source_prefix": "",
@@ -10,7 +10,7 @@
     "schema_serialization_with_db_description": true,
     "normalize_query": true,
     "target_with_db_id": true,
-    "output_dir": "./experiment/docut5-spider-desc-08-02-2023",
+    "output_dir": "./experiment/docut5-spider-desc-10-02-2023",
     "cache_dir": "/transformers_cache",
     "do_train": false,
     "do_eval": true,
