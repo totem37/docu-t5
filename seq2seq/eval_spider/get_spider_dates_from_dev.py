@@ -9,7 +9,11 @@ def get_spider_dates_from_dev(experiment_dir):
     filtered_predictions = []
     em_count = 0
     ex_count = 0
-    new_experiment_dir = experiment_dir.replace('spider', 'spider_dates') + '_a'
+    new_experiment_dir = experiment_dir.replace('spider-dev', 'spider-dates').strip('/') + '-a'
+    try:
+        os.makedirs(new_experiment_dir)
+    except:
+        print("Spider-Dates experiment directory exists, overwriting.")
     
     # Update predictions file with filtered predictions
     with open(os.path.join(experiment_dir, '../../dataset_files/ori_dataset/spider_dates/dev_spider_dates.json'), 'r') as spider_dates_file:
@@ -30,7 +34,7 @@ def get_spider_dates_from_dev(experiment_dir):
         if '_EX' in prediction:
           ex_count += 1
         
-    with open(os.path.join(new_experiment_dir, 'predictions_eval_None.json', 'w') as new_predictions_file:
+    with open(os.path.join(new_experiment_dir, 'predictions_eval_None.json'), 'w') as new_predictions_file:
       json.dump(filtered_predictions, new_predictions_file)
     
     # Update results files with new metrics
@@ -43,10 +47,10 @@ def get_spider_dates_from_dev(experiment_dir):
     results_dict.update({'eval_exact_match': new_em, 'eval_exec': new_ex})
     
     with open(os.path.join(new_experiment_dir, 'all_results.json'), 'w') as all_results_file:
-      json.dump(result_dict, all_results_file)
+      json.dump(results_dict, all_results_file)
       
     with open(os.path.join(new_experiment_dir, 'eval_results.json'), 'w') as eval_results_file:
-      json.dump(result_dict, eval_results_file)
+      json.dump(results_dict, eval_results_file)
               
 
 if __name__ == "__main__":
