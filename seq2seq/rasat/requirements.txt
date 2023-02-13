@@ -1,0 +1,8 @@
+datasets==2.4.0
+nltk==3.6.5
+rapidfuzz==1.8.3
+sqlparse==0.4.2
+stanza==1.3.0
+tenacity==8.0.1
+transformers==4.13.0
+wandb==0.12.7
