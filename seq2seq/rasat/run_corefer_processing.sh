@@ -19,4 +19,4 @@ echo "Start download stanza en resource"
 python -c "import stanza;stanza.download('en')"
 
 echo "Start coref process"
-python3 get_coref.py --input_path ./dataset_files --output_path ./dataset_files/preprocessed_dataset/spider_dk/dev_coref.json --dataset_name spider_dk --mode dev
+python3 get_coref.py --input_path ../../dataset_files --output_path ../../dataset_files/preprocessed_dataset/spider_dk/dev_coref.json --dataset_name spider_dk --mode dev

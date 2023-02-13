@@ -7,8 +7,8 @@ from datasets.metric import Metric
 from datasets.arrow_dataset import Dataset, concatenate_datasets
 from transformers.tokenization_utils_fast import PreTrainedTokenizerFast
 from transformers.training_args import TrainingArguments
-from seq2seq.utils.args import ModelArguments
-from seq2seq.utils.dataset import (
+from .args import ModelArguments
+from .dataset import (
     DataArguments,
     DataTrainingArguments,
     DatasetSplits,
@@ -16,9 +16,9 @@ from seq2seq.utils.dataset import (
     _prepare_train_split,
     prepare_splits,
 )
-from seq2seq.utils.spider import spider_add_serialized_schema, spider_pre_process_function
-from seq2seq.utils.sparc import sparc_add_serialized_schema, sparc_pre_process_function
-from seq2seq.utils.cosql import cosql_add_serialized_schema, cosql_pre_process_function
+from .spider import spider_add_serialized_schema, spider_pre_process_function
+from .sparc import sparc_add_serialized_schema, sparc_pre_process_function
+from .cosql import cosql_add_serialized_schema, cosql_pre_process_function
 
 logger = logging.getLogger(__name__)
 

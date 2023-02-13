@@ -13,9 +13,8 @@ logger = logging.getLogger(__name__)
 import os
 import json
 from pathlib import Path
-from collections import OrderedDict
 from contextlib import nullcontext
-from dataclasses import asdict, fields
+from dataclasses import asdict
 from transformers.hf_argparser import HfArgumentParser
 from transformers.training_args_seq2seq import Seq2SeqTrainingArguments
 from transformers.models.auto import AutoConfig, AutoTokenizer, AutoModelForSeq2SeqLM
@@ -32,8 +31,11 @@ from seq2seq.utils.dataset_loader import load_dataset
 from seq2seq.utils.spider import SpiderTrainer
 from seq2seq.utils.cosql import CoSQLTrainer
 
+from seq2seq.rasat.model.model_utils import get_relation_t5_model
+from seq2seq.rasat.model.relation_config import RASATConfig
+from seq2seq.rasat.preprocess.get_relation2id_dict import get_relation2id_dict
+from seq2seq.rasat.utils.relation_data_collator import DataCollatorForSeq2Seq as RASATDataCollator
 import torch
-from seq2seq.eval_spider.format_predictions import format_predictions
 
 # Necessary to prevent "HTTP Error 403: rate limit exceeded" with PyTorch 1.9.0
 torch.hub._validate_not_a_forked_repo=lambda a,b,c: True
@@ -119,7 +121,8 @@ def main() -> None:
     set_seed(training_args.seed)
 
     # Initialize config
-    config = AutoConfig.from_pretrained(
+    config_class = RASATConfig if training_args.use_rasat and not training_args.do_train else AutoConfig
+    config = config_class.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
         revision=model_args.model_revision,
@@ -173,6 +176,17 @@ def main() -> None:
             revision=model_args.model_revision,
             use_auth_token=True if model_args.use_auth_token else None,
         )
+        data_collator = DataCollatorForSeq2Seq
+        if data_training_args.use_rasat:
+            _, _, num_relations = get_relation2id_dict(data_training_args.edge_type, use_coref=data_training_args.use_coref, use_dependency=data_training_args.use_dependency)
+            config.num_relations = num_relations
+            print("===================================================")
+            print("Num of relations uesd in RASAT is : ", num_relations)
+            print("===================================================")
+            data_collator = RASATDataCollator
+            if training_args.do_train:
+                print("Using relation model.")
+                model = get_relation_t5_model(config=config, model_name_or_path=model_args.model_name_or_path)
 
         if isinstance(model, T5ForConditionalGeneration):
             model.resize_token_embeddings(len(tokenizer))
@@ -192,7 +206,7 @@ def main() -> None:
             "eval_dataset": dataset_splits.eval_split.dataset if training_args.do_eval else None,
             "eval_examples": dataset_splits.eval_split.examples if training_args.do_eval else None,
             "tokenizer": tokenizer,
-            "data_collator": DataCollatorForSeq2Seq(
+            "data_collator": data_collator(
                 tokenizer,
                 model=model,
                 label_pad_token_id=(-100 if data_training_args.ignore_pad_token_for_loss else tokenizer.pad_token_id),

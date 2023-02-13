@@ -4,9 +4,9 @@ from dataclasses import dataclass, field
 from datasets.dataset_dict import DatasetDict
 from datasets.arrow_dataset import Dataset
 from transformers.training_args import TrainingArguments
-from seq2seq.utils.bridge_content_encoder import get_database_matches
-from seq2seq.utils.lgerels2t5rels import preprocessing_dataset_split
-from seq2seq.preprocess.choose_dataset import preprocess_by_dataset
+from .bridge_content_encoder import get_database_matches
+from .lgerels2t5rels import preprocessing_dataset_split
+from seq2seq.rasat.preprocess.choose_dataset import preprocess_by_dataset
 import re
 import random
 
