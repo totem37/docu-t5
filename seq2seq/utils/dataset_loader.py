@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log_duplicate_count(dataset: Dataset, dataset_name: str, split: str) -> None:
+    return
     d = dataset.to_dict()
     d_t = [tuple((k, tuple(v)) for k, v in zip(d.keys(), vs)) for vs in zip(*d.values())]
     d_t_ = set(d_t)

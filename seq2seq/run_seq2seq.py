@@ -32,8 +32,9 @@ from seq2seq.utils.spider import SpiderTrainer
 from seq2seq.utils.cosql import CoSQLTrainer
 
 from seq2seq.rasat.model.model_utils import get_relation_t5_model
-from seq2seq.rasat.model.relation_config import RASATConfig
+from seq2seq.rasat.model.t5_relation_config import RASATConfig
 from seq2seq.rasat.preprocess.get_relation2id_dict import get_relation2id_dict
+from seq2seq.rasat.utils.custom_picard_model_wrapper import with_picard as rasat_with_picard
 from seq2seq.rasat.utils.relation_data_collator import DataCollatorForSeq2Seq as RASATDataCollator
 import torch
 
@@ -121,7 +122,7 @@ def main() -> None:
     set_seed(training_args.seed)
 
     # Initialize config
-    config_class = RASATConfig if training_args.use_rasat and not training_args.do_train else AutoConfig
+    config_class = RASATConfig if data_training_args.use_rasat and not training_args.do_train else AutoConfig
     config = config_class.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
@@ -161,22 +162,14 @@ def main() -> None:
     with PicardLauncher() if picard_args.launch_picard and training_args.local_rank <= 0 else nullcontext(None):
         # Get Picard model class wrapper
         if picard_args.use_picard:
-            model_cls_wrapper = lambda model_cls: with_picard(
+            picard_init_fn = rasat_with_picard if data_training_args.use_rasat else with_picard
+            model_cls_wrapper = lambda model_cls: picard_init_fn(
                 model_cls=model_cls, picard_args=picard_args, tokenizer=tokenizer, schemas=dataset_splits.schemas
             )
         else:
             model_cls_wrapper = lambda model_cls: model_cls
 
         # Initialize model from the given name or path
-        model = model_cls_wrapper(AutoModelForSeq2SeqLM).from_pretrained(
-            model_args.model_name_or_path,
-            from_tf=bool(".ckpt" in model_args.model_name_or_path),
-            config=config,
-            cache_dir=model_args.cache_dir,
-            revision=model_args.model_revision,
-            use_auth_token=True if model_args.use_auth_token else None,
-        )
-        data_collator = DataCollatorForSeq2Seq
         if data_training_args.use_rasat:
             _, _, num_relations = get_relation2id_dict(data_training_args.edge_type, use_coref=data_training_args.use_coref, use_dependency=data_training_args.use_dependency)
             config.num_relations = num_relations
@@ -184,9 +177,17 @@ def main() -> None:
             print("Num of relations uesd in RASAT is : ", num_relations)
             print("===================================================")
             data_collator = RASATDataCollator
-            if training_args.do_train:
-                print("Using relation model.")
-                model = get_relation_t5_model(config=config, model_name_or_path=model_args.model_name_or_path)
+            model = get_relation_t5_model(config=config, model_name_or_path=model_args.model_name_or_path)
+        else:
+            data_collator = DataCollatorForSeq2Seq
+            model = model_cls_wrapper(AutoModelForSeq2SeqLM).from_pretrained(
+                model_args.model_name_or_path,
+                from_tf=bool(".ckpt" in model_args.model_name_or_path),
+                config=config,
+                cache_dir=model_args.cache_dir,
+                revision=model_args.model_revision,
+                use_auth_token=True if model_args.use_auth_token else None,
+            )
 
         if isinstance(model, T5ForConditionalGeneration):
             model.resize_token_embeddings(len(tokenizer))

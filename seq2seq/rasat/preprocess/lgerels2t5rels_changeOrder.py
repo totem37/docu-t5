@@ -72,14 +72,14 @@ def match_question(t5_processed, dataset_lgesql, t5_tokenizer, lge_tokenizer, da
                     if append_t5_idx == -1 and append_q_idx == -1:
                         if len(t5_toks) < 512:
                             err+=1
-                            print(lge_aux_question_idx_list)
-                            print(t5_dataset_idx, t5_toks_k[start:])
-                            print(lge_dataset_idx, lge_r_question_toks[toks_idx:])
-                            print(t5_tokenizer.decode(t5_toks_ids))
-                            print(lge_r_question_toks)
-                            print(t5_toks_k)     
-                            print(dataset_lgesql[lge_dataset_idx]['processed_text_list'])
-                            print()
+                            #print(lge_aux_question_idx_list)
+                            #print(t5_dataset_idx, t5_toks_k[start:])
+                            #print(lge_dataset_idx, lge_r_question_toks[toks_idx:])
+                            #print(t5_tokenizer.decode(t5_toks_ids))
+                            #print(lge_r_question_toks)
+                            #print(t5_toks_k)     
+                            #print(dataset_lgesql[lge_dataset_idx]['processed_text_list'])
+                            #print()
                         break
                     else:
                         start = t5_bias+append_t5_idx
@@ -218,13 +218,13 @@ def match_table_and_column(dataset_lgesql, table_lgesql, t5_tokenizer):
                                     flag = False
                                     continue
             if (not flag):
-                print(repr(col))
-                print(column_sep_index_list)
-                print(t5_toks[col_lidx: col_ridx])
-                print(" ".join(t5_toks))
-                print(lge_column)
-                print(lge_column_ori)
-                print(column_lgeid2t5id)
+                #print(repr(col))
+                #print(column_sep_index_list)
+                #print(t5_toks[col_lidx: col_ridx])
+                #print(" ".join(t5_toks))
+                #print(lge_column)
+                #print(lge_column_ori)
+                #print(column_lgeid2t5id)
                 err += 1
             total_example += 1
             dataset_lgesql[lge_dataset_idx][f"column_lgeid2t5id_{j}"] = column_lgeid2t5id

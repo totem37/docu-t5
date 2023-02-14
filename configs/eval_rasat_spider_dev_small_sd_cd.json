@@ -32,5 +32,7 @@
     "metric_config": "both",
     "val_max_target_length": 512,
     "val_max_time": 1200,
-    "use_rasat": true
+    "use_rasat": true,
+    "data_base_dir": "dataset_files",
+    "split_dataset": "spider"
 }

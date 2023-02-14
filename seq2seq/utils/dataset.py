@@ -203,7 +203,7 @@ class DataArguments:
         metadata={"help": "Sections from the data config to use for testing"}
     )
     data_base_dir : Optional[str] = field(
-        default="./dataset_files/",
+        default="dataset_files/",
         metadata={"help": "Base path to the lge relation dataset."})
     split_dataset : Optional[str] = field(
         default="",
