@@ -177,7 +177,7 @@ def main() -> None:
             print("Num of relations uesd in RASAT is : ", num_relations)
             print("===================================================")
             data_collator = RASATDataCollator
-            model = get_relation_t5_model(config=config, model_name_or_path=model_args.model_name_or_path)
+            model = model_cls_wrapper(get_relation_t5_model(config=config, model_name_or_path=model_args.model_name_or_path))
         else:
             data_collator = DataCollatorForSeq2Seq
             model = model_cls_wrapper(AutoModelForSeq2SeqLM).from_pretrained(
