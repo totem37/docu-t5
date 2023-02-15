@@ -136,6 +136,22 @@ To re-enter the last exited Docker container run:
 docker start `docker ps -q -l` && docker attach `docker ps -q -l`
 ```
 
+### RASAT
+
+If using RASAT, ensure these lines are in your config file:
+```
+"use_rasat": true,
+"data_base_dir": "dataset_files",
+"split_dataset": "spider"
+```
+
+Before running the training/evaluation script, run the following commands:
+```
+pip install stanza
+python seq2seq/rasat/stanza_downloader.py
+unzip seq2seq/rasat/preprocessed_dataset.zip -d ./dataset_files/
+```
+
 ### Serving
 
 A trained model can be served using the `seq2seq/serve_seq2seq.py` script.

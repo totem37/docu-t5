@@ -31,7 +31,7 @@ from seq2seq.utils.dataset_loader import load_dataset
 from seq2seq.utils.spider import SpiderTrainer
 from seq2seq.utils.cosql import CoSQLTrainer
 
-from seq2seq.rasat.model.model_utils import get_relation_t5_model
+from seq2seq.rasat.model.t5_relation_model import T5ForConditionalGeneration as T5_Relation
 from seq2seq.rasat.model.t5_relation_config import RASATConfig
 from seq2seq.rasat.preprocess.get_relation2id_dict import get_relation2id_dict
 from seq2seq.rasat.utils.custom_picard_model_wrapper import with_picard as rasat_with_picard
@@ -177,17 +177,19 @@ def main() -> None:
             print("Num of relations uesd in RASAT is : ", num_relations)
             print("===================================================")
             data_collator = RASATDataCollator
-            model = model_cls_wrapper(get_relation_t5_model(config=config, model_name_or_path=model_args.model_name_or_path))
+            model_class = T5_Relation
         else:
             data_collator = DataCollatorForSeq2Seq
-            model = model_cls_wrapper(AutoModelForSeq2SeqLM).from_pretrained(
-                model_args.model_name_or_path,
-                from_tf=bool(".ckpt" in model_args.model_name_or_path),
-                config=config,
-                cache_dir=model_args.cache_dir,
-                revision=model_args.model_revision,
-                use_auth_token=True if model_args.use_auth_token else None,
-            )
+            model_class = AutoModelForSeq2SeqLM
+        
+        model = model_cls_wrapper(model_class).from_pretrained(
+            model_args.model_name_or_path,
+            from_tf=bool(".ckpt" in model_args.model_name_or_path),
+            config=config,
+            cache_dir=model_args.cache_dir,
+            revision=model_args.model_revision,
+            use_auth_token=True if model_args.use_auth_token else None,
+        )
 
         if isinstance(model, T5ForConditionalGeneration):
             model.resize_token_embeddings(len(tokenizer))
