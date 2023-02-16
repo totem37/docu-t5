@@ -313,7 +313,7 @@ class Preprocessor():
         else:
             doc = self.nlp_pretokenize(question)
         raw_toks = [w.text.lower() for s in doc.sentences for w in s.words]
-        toks = [w.lemma.lower() for s in doc.sentences for w in s.words]
+        toks = [w.lemma.lower() if w.lemma else w.text.lower() for s in doc.sentences for w in s.words]
         entry[f'raw_question_toks_{turn}'] = raw_toks
         entry[f'ori_toks_{turn}'] = [w.text for s in doc.sentences for w in s.words]
         entry[f'processed_question_toks_{turn}'] = toks
