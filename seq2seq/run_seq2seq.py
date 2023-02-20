@@ -240,15 +240,6 @@ def main() -> None:
             elif last_checkpoint is not None:
                 checkpoint = last_checkpoint
                 
-            metrics = trainer.evaluate(
-                max_length=data_training_args.val_max_target_length,
-                max_time=data_training_args.val_max_time,
-                num_beams=data_training_args.num_beams,
-                metric_key_prefix="eval",
-            )
-            trainer.log_metrics("eval", metrics)
-            trainer.save_metrics("eval", metrics)
-
             train_result = trainer.train(resume_from_checkpoint=checkpoint)
             trainer.save_model()  # Saves the tokenizer too for easy upload
 
