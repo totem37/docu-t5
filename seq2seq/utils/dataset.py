@@ -293,6 +293,9 @@ def _prepare_train_split(
             example['relations'] = relation_matrix_l[idx]  
             return example
         dataset = dataset.map(add_relation_info_train, with_indices=True)
+        print("train example question: " + train_dataset[42]['question'])
+        print("train example query: " + train_dataset[42]['query'])
+        print("train example relations: " + train_dataset[42]['relations'])
 
     return TrainSplit(dataset=dataset, schemas=schemas)
 
@@ -347,6 +350,9 @@ def _prepare_eval_split(
             return example
             
         eval_dataset = eval_dataset.map(add_relation_info_train, with_indices=True)
+        print("eval example question: " + eval_dataset[42]['question'])
+        print("eval example query: " + eval_dataset[42]['query'])
+        print("eval example relations: " + eval_dataset[42]['relations'])
 
     return EvalSplit(dataset=eval_dataset, examples=eval_examples, schemas=schemas)
 

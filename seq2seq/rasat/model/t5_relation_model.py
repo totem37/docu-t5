@@ -1006,9 +1006,11 @@ class T5Stack(T5PreTrainedModel):
         if relations is not None and self.relation_k_emb is not None:
             relation_k_emb = self.relation_k_emb(relations.long())
             relation_v_emb = self.relation_v_emb(relations.long())
-            # print("inputs_embed: ", inputs_embeds)
-            # print("relation_k_emb.shape: ", relation_k_emb.shape)
-            # print("relation_v_emb.shape: ", relation_v_emb.shape)
+            print("inputs_embed: ", inputs_embeds)
+            print("relation_k_emb: ", relation_k_emb)
+            print("relation_v_emb: ", relation_v_emb)
+            print("relation_k_emb.shape: ", relation_k_emb.shape)
+            print("relation_v_emb.shape: ", relation_v_emb.shape)
         else:
             relation_k_emb = None
             relation_v_emb = None
