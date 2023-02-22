@@ -1,10 +1,10 @@
-from typing import Optional, List, Dict, Callable
 from dataclasses import dataclass, field
-from datasets.dataset_dict import DatasetDict
 from datasets.arrow_dataset import Dataset
-from transformers.training_args import TrainingArguments
-from seq2seq.utils.bridge_content_encoder import get_database_matches
+from datasets.dataset_dict import DatasetDict
 from seq2seq.rasat.preprocess.choose_dataset import preprocess_by_dataset
+from seq2seq.utils.bridge_content_encoder import get_database_matches
+from transformers.training_args import TrainingArguments
+from typing import Optional, List, Dict, Callable
 import re
 import random
 
@@ -210,6 +210,14 @@ class DataArguments:
         metadata={"help": "The dataset name after spliting."})
 
 
+def add_serialized_description(
+    ex: dict,
+) -> Dict[str, str]:
+    desc_sep = " | description | "
+    serialized_description = ex["serialized_schema"] + desc_sep + ex["db_description"]
+    return {"serialized_schema": serialized_description}
+
+
 @dataclass
 class TrainSplit(object):
     dataset: Dataset
@@ -245,6 +253,27 @@ def _get_schemas(examples: Dataset) -> Dict[str, dict]:
     return schemas
 
 
+def _preprocess_split(
+    dataset: Dataset,
+    data_training_args: DataTrainingArguments,
+    pre_process_function: Callable[[dict, Optional[int], Optional[int]], dict],
+    max_target_length: Optional[int]
+) -> Dataset:
+    column_names = dataset.column_names
+    dataset = dataset.map(
+        lambda batch: pre_process_function(
+            batch=batch,
+            max_source_length=data_training_args.max_source_length,
+            max_target_length=max_target_length,
+        ),
+        batched=True,
+        num_proc=data_training_args.preprocessing_num_workers,
+        remove_columns=column_names[:-1] if column_names[-1]=="relations" else column_names,
+        load_from_cache_file=not data_training_args.overwrite_cache,
+    )
+    return dataset
+
+
 def _prepare_train_split(
     dataset: Dataset,
     data_args: DataArguments,
@@ -253,37 +282,33 @@ def _prepare_train_split(
     pre_process_function: Callable[[dict, Optional[int], Optional[int]], dict],
 ) -> TrainSplit:
     schemas = _get_schemas(examples=dataset)
+    if data_training_args.max_train_samples is not None:
+        dataset = dataset.select(range(data_training_args.max_train_samples))
     dataset = dataset.map(
         add_serialized_schema,
         batched=False,
         num_proc=data_training_args.preprocessing_num_workers,
         load_from_cache_file=not data_training_args.overwrite_cache,
     )
-    if data_training_args.max_train_samples is not None:
-        dataset = dataset.select(range(data_training_args.max_train_samples))
-    column_names = dataset.column_names
-    dataset = dataset.map(
-        lambda batch: pre_process_function(
-            batch=batch,
-            max_source_length=data_training_args.max_source_length,
-            max_target_length=data_training_args.max_target_length,
-        ),
-        batched=True,
-        num_proc=data_training_args.preprocessing_num_workers,
-        remove_columns=column_names[:-1] if column_names[-1]=="relations" else column_names,
-        load_from_cache_file=not data_training_args.overwrite_cache,
+
+    # Copy the dataset before preprocessing in order to compute relations on the instances without schema descriptions
+    preprocessed_dataset = _preprocess_split(
+    	dataset=dataset,
+    	data_training_args=data_training_args,
+    	pre_process_function=pre_process_function,
+    	max_target_length=data_training_args.max_target_length
     )
 
-    if data_args.split_dataset == "spider":
-        train_input_ids = [dataset[i]['input_ids'] for i in range(7000)]
-    else:
-        train_input_ids = [dataset[i]['input_ids'] for i in range(len(dataset))]
+    #if data_args.split_dataset == "spider":
+        #train_input_ids = [dataset_copy[i]['input_ids'] for i in range(7000)]
+    #else:
+    train_input_ids = [preprocessed_dataset[i]['input_ids'] for i in range(len(preprocessed_dataset))]
 
     if data_training_args.use_rasat:
         relation_matrix_l = preprocess_by_dataset(
             data_args.data_base_dir, 
             data_args.split_dataset, 
-            train_input_ids, 
+            train_input_ids,
             "train", 
             edge_type=data_training_args.edge_type, 
             use_coref=data_training_args.use_coref,
@@ -292,9 +317,29 @@ def _prepare_train_split(
         def add_relation_info_train(example, idx, relation_matrix_l=relation_matrix_l):
             example['relations'] = relation_matrix_l[idx]  
             return example
+        preprocessed_dataset = preprocessed_dataset.map(add_relation_info_train, with_indices=True)
         dataset = dataset.map(add_relation_info_train, with_indices=True)
+        print(f"Example input_ids: {preprocessed_dataset[42]['input_ids']}")
+        print(f"Example relations: {dataset[42]['relations']}")
 
-    return TrainSplit(dataset=dataset, schemas=schemas)
+    if data_training_args.schema_serialization_with_db_description:
+        dataset = dataset.map(
+            add_serialized_description,
+            batched=False,
+            num_proc=data_training_args.preprocessing_num_workers,
+            load_from_cache_file=not data_training_args.overwrite_cache,
+        )
+        print(f"keys: {dataset[42].keys()}")
+        print(f"Example description: {dataset[42]['serialized_description']}")
+        preprocessed_dataset = _preprocess_split(
+            dataset=dataset,
+            data_training_args=data_training_args,
+            pre_process_function=pre_process_function,
+            max_target_length=data_training_args.max_target_length
+        )
+    print(f"Example question: {preprocessed_dataset[42]['input_ids']}")
+
+    return TrainSplit(dataset=preprocessed_dataset, schemas=schemas)
 
 
 def _prepare_eval_split(
@@ -431,22 +476,17 @@ def serialize_schema(
     db_table_names: List[str],
     db_foreign_keys:Dict[str, List[str]],
     db_primary_keys:Dict[str, List[str]],
-    description: str,
     schema_serialization_type: str = "peteshaw",
     schema_serialization_randomized: bool = False,
     schema_serialization_with_db_id: bool = True,
     schema_serialization_with_db_content: bool = False,
     schema_serialization_with_foreign_keys: bool = False,
-    schema_serialization_with_db_description:bool = True,
     normalize_query: bool = True,
 ) -> str:
     pair1 = db_foreign_keys['column_id']
     pair2 = db_foreign_keys['other_column_id']
     foreign = {}
-# {'table_id': [-1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3], 'column_name': ['*', 'Stadium_ID', 'Location', 'Name', 'Capacity', 'Highest', 'Lowest', 'Average', 'Singer_ID', 'Name', 'Country', 'Song_Name', 'Song_release_year', 'Age', 'Is_male', 'concert_ID', 'concert_Name', 'Theme', 'Stadium_ID', 'Year', 'concert_ID', 'Singer_ID']}
 
-
-    desc_sep = " | description | "
     if schema_serialization_type == "verbose":
         db_id_str = "Database: {db_id}. "
         table_sep = ". "
@@ -539,8 +579,6 @@ def serialize_schema(
         serialized_schema = db_id_str.format(db_id=db_id) + table_sep.join(tables)
     else:
         serialized_schema = table_sep.join(tables)
-    if schema_serialization_with_db_description:
-      serialized_schema += desc_sep + description
     print('serializes: ' + serialized_schema)
     return serialized_schema
 
