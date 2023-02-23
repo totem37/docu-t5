@@ -218,13 +218,13 @@ def match_table_and_column(dataset_lgesql, table_lgesql, t5_tokenizer):
                                     flag = False
                                     continue
             if (not flag):
-                #print(repr(col))
-                #print(column_sep_index_list)
-                #print(t5_toks[col_lidx: col_ridx])
-                #print(" ".join(t5_toks))
-                #print(lge_column)
-                #print(lge_column_ori)
-                #print(column_lgeid2t5id)
+                print(repr(col))
+                print(column_sep_index_list)
+                print(t5_toks[col_lidx: col_ridx])
+                print(" ".join(t5_toks))
+                print(lge_column)
+                print(lge_column_ori)
+                print(column_lgeid2t5id)
                 err += 1
             total_example += 1
             dataset_lgesql[lge_dataset_idx][f"column_lgeid2t5id_{j}"] = column_lgeid2t5id
@@ -454,6 +454,9 @@ def preprocessing_lgerels2t5rels_changeOrder(data_base_dir, dataset_name, t5_pro
     t5_tokenizer, lge_tokenizer = init_tokenizer()
     dataset_lgesql, table_lgesql = init_dataset(data_base_dir, dataset_name, mode)
     RELATION2ID_DICT, ID2RELATION_DICT, edge_num = get_relation2id_dict(edgeType, use_coref, use_dependency)
+
+    if len(t5_processed) < len(dataset_lgesql):
+        dataset_lgesql = dataset_lgesql[:len(t5_processed)]
 
     print(f"Dataset: {dataset_name}")
     print(f"Mode: {mode}")

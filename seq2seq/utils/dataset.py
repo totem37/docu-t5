@@ -284,6 +284,7 @@ def _prepare_train_split(
     schemas = _get_schemas(examples=dataset)
     if data_training_args.max_train_samples is not None:
         dataset = dataset.select(range(data_training_args.max_train_samples))
+    print("Serializing Database Schemas.")
     dataset = dataset.map(
         add_serialized_schema,
         batched=False,
@@ -292,6 +293,7 @@ def _prepare_train_split(
     )
 
     # Copy the dataset before preprocessing in order to compute relations on the instances without schema descriptions
+    print("Preprocessing Instances.")
     preprocessed_dataset = _preprocess_split(
     	dataset=dataset,
     	data_training_args=data_training_args,
@@ -299,9 +301,6 @@ def _prepare_train_split(
     	max_target_length=data_training_args.max_target_length
     )
 
-    #if data_args.split_dataset == "spider":
-        #train_input_ids = [dataset_copy[i]['input_ids'] for i in range(7000)]
-    #else:
     train_input_ids = [preprocessed_dataset[i]['input_ids'] for i in range(len(preprocessed_dataset))]
 
     if data_training_args.use_rasat:
@@ -321,12 +320,14 @@ def _prepare_train_split(
         dataset = dataset.map(add_relation_info_train, with_indices=True)
 
     if data_training_args.schema_serialization_with_db_description:
+        print("Serializing Schema Descriptions.")
         dataset = dataset.map(
             add_serialized_description,
             batched=False,
             num_proc=data_training_args.preprocessing_num_workers,
             load_from_cache_file=not data_training_args.overwrite_cache,
         )
+        print("Preprocessing Instances with Descriptions.")
         preprocessed_dataset = _preprocess_split(
             dataset=dataset,
             data_training_args=data_training_args,
@@ -350,27 +351,25 @@ def _prepare_eval_split(
     else:
         eval_examples = dataset
     schemas = _get_schemas(examples=eval_examples)
-    eval_dataset = eval_examples.map(
+    print("Serializing Database Schemas.")
+    dataset = dataset.map(
         add_serialized_schema,
         batched=False,
         num_proc=data_training_args.preprocessing_num_workers,
         load_from_cache_file=not data_training_args.overwrite_cache,
     )
-    column_names = eval_dataset.column_names
-    eval_dataset = eval_dataset.map(
-        lambda batch: pre_process_function(
-            batch=batch,
-            max_source_length=data_training_args.max_source_length,
-            max_target_length=data_training_args.val_max_target_length,
-        ),
-        batched=True,
-        num_proc=data_training_args.preprocessing_num_workers,
-        remove_columns=column_names[:-1] if column_names[-1]=="relations" else column_names,
-        load_from_cache_file=not data_training_args.overwrite_cache,
+
+    # Copy the dataset before preprocessing in order to compute relations on the instances without schema descriptions
+    print("Preprocessing Instances.")
+    preprocessed_dataset = _preprocess_split(
+    	dataset=dataset,
+    	data_training_args=data_training_args,
+    	pre_process_function=pre_process_function,
+    	max_target_length=data_training_args.val_max_target_length
     )
 
     #TODO from RASAT code: It can not do the testing now (test will do dev still)
-    eval_input_ids = [eval_dataset[i]['input_ids'] for i in range(len(eval_dataset))]
+    eval_input_ids = [preprocessed_dataset[i]['input_ids'] for i in range(len(preprocessed_dataset))]
     
     if data_training_args.use_rasat:
         relation_matrix_l = preprocess_by_dataset(
@@ -384,11 +383,27 @@ def _prepare_eval_split(
             )
         def add_relation_info_train(example, idx, relation_matrix_l=relation_matrix_l):
             example['relations'] = relation_matrix_l[idx]  
-            return example
-            
-        eval_dataset = eval_dataset.map(add_relation_info_train, with_indices=True)
+            return example 
+        preprocessed_dataset = preprocessed_dataset.map(add_relation_info_train, with_indices=True)
+        dataset = dataset.map(add_relation_info_train, with_indices=True)
 
-    return EvalSplit(dataset=eval_dataset, examples=eval_examples, schemas=schemas)
+    if data_training_args.schema_serialization_with_db_description:
+        print("Serializing Schema Descriptions.")
+        dataset = dataset.map(
+            add_serialized_description,
+            batched=False,
+            num_proc=data_training_args.preprocessing_num_workers,
+            load_from_cache_file=not data_training_args.overwrite_cache,
+        )
+        print("Preprocessing Instances with Descriptions.")
+        preprocessed_dataset = _preprocess_split(
+            dataset=dataset,
+            data_training_args=data_training_args,
+            pre_process_function=pre_process_function,
+            max_target_length=data_training_args.val_max_target_length
+        )
+
+    return EvalSplit(dataset=preprocessed_dataset, examples=eval_examples, schemas=schemas)
 
 
 def prepare_splits(
@@ -545,7 +560,8 @@ def serialize_schema(
             primary_key_table = db_table_names[int(db_column_names['table_id'][column_ref_id])]
             primary_key_table = primary_key_table.lower() if normalize_query else primary_key_table
 
-            column_str = column_str +  ' foreign key ' + primary_key_table + ' '# + '.' + primary_key_column +''
+            if schema_serialization_with_foreign_keys:
+                column_str = column_str +  ' foreign key ' + primary_key_table + ' '# + '.' + primary_key_column +''
 
 
         
@@ -574,7 +590,7 @@ def serialize_schema(
         serialized_schema = db_id_str.format(db_id=db_id) + table_sep.join(tables)
     else:
         serialized_schema = table_sep.join(tables)
-    print('serializes: ' + serialized_schema)
+    #print('serializes: ' + serialized_schema)
     return serialized_schema
 
 

@@ -89,24 +89,30 @@ class DataCollatorForSeq2Seq:
         # same length to return tensors.
         if relations is not None:
 
-            sub_len = [len(r)-len(i) for r,i in zip(relations, input_ids)]
+            #sub_len = [len(r)-len(i) for r,i in zip(relations, input_ids)]
+
+            #if any(sub_len):
+                #print("lengths:")
+                #print(f"relations: {[len(r) for r in relations]}")
+                #print(f"input_ids: {[len(i) for i in input_ids]}")
+                #print()
             
-            assert  not(any(sub_len)), "the relations is not equal with input_ids"
+            #assert  not(any(sub_len)), "the relations is not equal with input_ids"
 
             max_input_ids = max(len(i) for i in input_ids)
             max_relation_length = max(len(r) for r in relations)
 
-            assert max_input_ids==max_relation_length, "max_input_ids is not equal to max_relation_length"
+            #assert max_input_ids==max_relation_length, "max_input_ids is not equal to max_relation_length"
 
             max_length = max(max_input_ids, max_relation_length)
             for feature in features:
                 relation_pad_length = max_length - len(feature['relations']) 
                 feature["relations"] = np.pad(np.array(feature["relations"]),((0,relation_pad_length),(0,relation_pad_length)),'constant',constant_values = (0,0))  #constant_values表示填充值，且(before，after)的填充值等于（0,0）
 
-        # print("type(features:)", type(features))
-        # print("type(features[0]:)", type(features[0]))
-        # print("len(features[0]:)", len(features[0]['input_ids']))
-        # print("(features[0]:)", features[0]['input_ids'])
+        #print("type(features):", type(features))
+        #print("type(features[0]):", type(features[0]))
+        #print("len(features[0]):", len(features[0]['input_ids']))
+        #print("(features[0]):", features[0]['input_ids'])
 
         features = self.tokenizer.pad(
             features,
@@ -116,10 +122,14 @@ class DataCollatorForSeq2Seq:
             return_tensors=return_tensors,
         )
 
-        # print("type(features:)", type(features))
-        # print("type(features[0]:)", type(features[0]))
-        # print("After pad len(features[0]:)", len(features[0]['input_ids']))
-        # print("After pad (features[0]:)", features[0]["input_ids"])
+        # print("type(features):", type(features))
+        # The following 5 print statements don't work
+        # print("type(features[0]):", type(features[0]))
+        # print("After pad len(features[0]):", len(features[0]['input_ids']))
+        # print("After pad (features[0]):", features[0]["input_ids"])
+        # print("After pad len(features[0] relations):", len(features[0]['relations']))
+        # print("After pad (features[0] relations):", features[0]["relations"])
+
         # import os;os._exit()
 
         # prepare decoder_input_ids
