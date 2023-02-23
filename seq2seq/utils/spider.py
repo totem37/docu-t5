@@ -42,7 +42,6 @@ def spider_get_target(
 
 
 def spider_add_serialized_schema(ex: dict, data_training_args: DataTrainingArguments) -> dict:
-    print("serializing ex")
     serialized_schema = serialize_schema(
         question=ex["question"],
         db_path=ex["db_path"],

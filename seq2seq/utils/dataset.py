@@ -319,8 +319,6 @@ def _prepare_train_split(
             return example
         preprocessed_dataset = preprocessed_dataset.map(add_relation_info_train, with_indices=True)
         dataset = dataset.map(add_relation_info_train, with_indices=True)
-        print(f"Example input_ids: {preprocessed_dataset[42]['input_ids']}")
-        print(f"Example relations: {dataset[42]['relations']}")
 
     if data_training_args.schema_serialization_with_db_description:
         dataset = dataset.map(
@@ -329,15 +327,12 @@ def _prepare_train_split(
             num_proc=data_training_args.preprocessing_num_workers,
             load_from_cache_file=not data_training_args.overwrite_cache,
         )
-        print(f"keys: {dataset[42].keys()}")
-        print(f"Example description: {dataset[42]['serialized_description']}")
         preprocessed_dataset = _preprocess_split(
             dataset=dataset,
             data_training_args=data_training_args,
             pre_process_function=pre_process_function,
             max_target_length=data_training_args.max_target_length
         )
-    print(f"Example question: {preprocessed_dataset[42]['input_ids']}")
 
     return TrainSplit(dataset=preprocessed_dataset, schemas=schemas)
 
