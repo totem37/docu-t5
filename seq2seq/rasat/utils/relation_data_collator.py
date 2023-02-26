@@ -88,7 +88,7 @@ class DataCollatorForSeq2Seq:
             for feature in features:
                 relations.append(feature['relations'])
                 input_ids.append(feature['input_ids'])
-                feature_length = max(feature['relations'], feature['input_ids'])
+                feature_length = max(len(feature['relations']), len(feature['input_ids']))
                 
                 if feature_length > max_length:
                     max_length = feature_length
