@@ -80,31 +80,21 @@ class DataCollatorForSeq2Seq:
                 else:
                     feature["labels"] = np.concatenate([remainder, feature["labels"]]).astype(np.int64)
 
-        relations = [feature["relations"] for feature in features] if "relations" in features[0].keys() else None
-        input_ids = [feature["input_ids"] for feature in features] if "input_ids" in features[0].keys() else None
-        
-        
-        
-        # We have to pad the relation matrixs before calling `tokenizer.pad` as this method won't pad them and needs them of the
-        # same length to return tensors.
-        if relations is not None:
-
-            #sub_len = [len(r)-len(i) for r,i in zip(relations, input_ids)]
-
-            #if any(sub_len):
-                #print("lengths:")
-                #print(f"relations: {[len(r) for r in relations]}")
-                #print(f"input_ids: {[len(i) for i in input_ids]}")
-                #print()
+        if "relations" in features[0].keys():
+            relations = []
+            input_ids = []
+            max_length = 0
             
-            #assert  not(any(sub_len)), "the relations is not equal with input_ids"
-
-            max_input_ids = max(len(i) for i in input_ids)
-            max_relation_length = max(len(r) for r in relations)
-
-            #assert max_input_ids==max_relation_length, "max_input_ids is not equal to max_relation_length"
-
-            max_length = max(max_input_ids, max_relation_length)
+            for feature in features:
+                relations.append(feature['relations'])
+                input_ids.append(feature['input_ids'])
+                feature_length = max(feature['relations'], feature['input_ids'])
+                
+                if feature_length > max_length:
+                    max_length = feature_length
+                    
+            # We have to pad the relation matrixs before calling `tokenizer.pad` as this method won't pad them and needs them of the
+            # same length to return tensors.
             for feature in features:
                 relation_pad_length = max_length - len(feature['relations']) 
                 feature["relations"] = np.pad(np.array(feature["relations"]),((0,relation_pad_length),(0,relation_pad_length)),'constant',constant_values = (0,0))  #constant_values表示填充值，且(before，after)的填充值等于（0,0）
