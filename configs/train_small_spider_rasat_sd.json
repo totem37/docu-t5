@@ -18,7 +18,7 @@
     "do_train": true,
     "do_eval": true,
     "fp16": false,
-    "num_train_epochs": 3072,
+    "num_train_epochs": 1602,
     "per_device_train_batch_size": 16,
     "per_device_eval_batch_size": 16,
     "gradient_accumulation_steps": 410,
