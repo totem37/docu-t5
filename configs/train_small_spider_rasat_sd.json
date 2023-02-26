@@ -23,7 +23,7 @@
     "per_device_eval_batch_size": 16,
     "gradient_accumulation_steps": 410,
     "label_smoothing_factor": 0.0,
-    "learning_rate": 1e-4,
+    "learning_rate": 1e-3,
     "adafactor": true,
     "adam_eps": 1e-6,
     "lr_scheduler_type": "constant",
@@ -38,9 +38,9 @@
     "metric_for_best_model": "exact_match",
     "greater_is_better": true,
     "save_total_limit": 128,
-    "save_steps": 400,
+    "save_steps": 200,
     "evaluation_strategy": "steps",
-    "eval_steps": 400,
+    "eval_steps": 200,
     "should_save": true,
     "push_to_hub": true,
     "predict_with_generate": true,
@@ -50,6 +50,5 @@
     "use_rasat": true,
     "data_base_dir": "dataset_files",
     "split_dataset": "spider",
-    "use_dependency": true,
-    "deepspeed": "configs/ds_config_zero2.json"
+    "use_dependency": true
 }
