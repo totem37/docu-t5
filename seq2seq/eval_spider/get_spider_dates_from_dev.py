@@ -30,7 +30,7 @@ def get_spider_dates_from_dev(experiment_dir, mode=None):
       
     with open(os.path.join(experiment_dir, 'failures.txt'), 'r') as failures_file:
       predictions = failures_file.readlines()
-      
+
     for instance, prediction in zip(instances, predictions):
       if instance['question'] in spider_dates_questions:
         filtered_predictions.append(instance)
