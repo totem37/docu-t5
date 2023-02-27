@@ -2,21 +2,26 @@ import json
 import os
 import sys
 
-def get_spider_dates_from_dev(experiment_dir):
+def get_spider_dates_from_dev(experiment_dir, mode=None):
     """
-    Copies the given Spider-dev experiment directory and extracts the Spider-Dates dev instances
+    Copies the given Spider experiment directory and extracts the Spider-Dates instances
     """
     filtered_predictions = []
     em_count = 0
     ex_count = 0
     new_experiment_dir = experiment_dir.replace('spider-dev', 'spider-dates').strip('/') + '-a'
+    if mode:
+      new_experiment_dir = experiment_dir.replace(f'spider-{mode}', f'{mode}-spider-dates').strip('/') + '-b'
     try:
         os.makedirs(new_experiment_dir)
     except:
         print("Spider-Dates experiment directory exists, overwriting.")
     
     # Update predictions file with filtered predictions
-    with open(os.path.join(experiment_dir, '../../dataset_files/ori_dataset/spider_dates/dev_spider_dates.json'), 'r') as spider_dates_file:
+    dates_dataset_file = '../../dataset_files/ori_dataset/spider_dates/dev_spider_dates.json'
+    if mode:
+      dates_dataset_file = f'../../dataset_files/ori_dataset/{mode}_spider_dates/{mode}_spider_dates.json'
+    with open(os.path.join(experiment_dir, dates_dataset_file), 'r') as spider_dates_file:
       spider_dates_instances = json.load(spider_dates_file)
       spider_dates_questions = [instance['question'] for instance in spider_dates_instances]
     
@@ -54,8 +59,13 @@ def get_spider_dates_from_dev(experiment_dir):
               
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("get_spider_dates_from_dev takes 1 argument: the experiment directory")
-    else:
+    if len(sys.argv) not in [2,3]:
+        print("get_spider_dates_from_dev takes 1 or 2 arguments: the experiment directory and the mode (optional)")
+        print("mode may be: dev or dk")
+    elif len(sys.argv) == 2:
         experiment_dir = sys.argv[1]
         get_spider_dates_from_dev(experiment_dir)
+    else:
+        experiment_dir = sys.argv[1]
+        mode = sys.argv[2]
+        get_spider_dates_from_dev(experiment_dir, mode)

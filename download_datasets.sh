@@ -12,6 +12,7 @@ gdown "1XZHXCHiA3qYRsHjF68oo5gtzU_gbGMjo&confirm=t"
 gdown "1WlxXLFWpDSrCvCAIXDABSHQxIxXUdlp-&confirm=t"
 gdown "1Vi3VX7tp9rClYZS3_VDNVH_yZzf5bVeg&confirm=t"
 gdown "1C3-cB2YkByvjYFIOBUO0g8ornrZECkbC&confirm=t"
+gdown "10xtuwzWJn_7SfOi7xnXjXTF9B3oz6zdO&confirm=t"
 
 cd ..
 unzip dataset_files/spider.zip -d dataset_files/ori_dataset/
@@ -27,4 +28,7 @@ mv dataset_files/ori_dataset/spider-dates dataset_files/ori_dataset/spider_dates
 rm -r dataset_files/ori_dataset/spider_desc
 unzip dataset_files/spider-desc.zip -d dataset_files/ori_dataset/
 mv dataset_files/ori_dataset/spider-desc dataset_files/ori_dataset/spider_desc
+rm -r dataset_files/ori_dataset/dk_spider_dates
+unzip dataset_files/dk-spider-dates.zip -d dataset_files/ori_dataset/
+mv dataset_files/ori_dataset/dk-spider-dates dataset_files/ori_dataset/dk_spider_dates
 chmod -R 777 dataset_files/

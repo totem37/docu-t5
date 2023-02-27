@@ -220,7 +220,7 @@ def main() -> None:
             "convert_numbers_to_text": data_training_args.convert_numbers_to_text,
         }
         #using spidertrainer as it is.
-        if data_args.dataset.replace('-', '_') in ["spider", "spider_realistic", "spider_syn", "spider_dk", "spider_dates", "spider_desc"]:
+        if data_args.dataset.replace('-', '_') in ["spider", "spider_realistic", "spider_syn", "spider_dk", "spider_dates", "dk_spider_dates", "spider_desc"]:
             trainer = SpiderTrainer(**trainer_kwargs)
         elif data_args.dataset in ["cosql", "cosql+spider"]:
             trainer = CoSQLTrainer(**trainer_kwargs)
