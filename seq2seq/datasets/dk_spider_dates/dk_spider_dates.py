@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import json
+import os
 from turtle import down
 from third_party.spider.preprocess.get_tables import dump_db_json_schema
 import datasets
@@ -97,13 +98,6 @@ class DKSpiderDates(datasets.GeneratorBasedBuilder):
         downloaded_filepath = dl_manager.download_and_extract(_URL)
 
         return [
-            datasets.SplitGenerator(
-                name = datasets.Split.TRAIN,
-                gen_kwargs={
-                    "data_filepaths":[downloaded_filepath + "/dk-spider-dates/train_spider_dates.json"],
-                    "db_path": downloaded_filepath + "/dk-spider-dates/database",
-                },
-            ),
             datasets.SplitGenerator(
                 name = datasets.Split.VALIDATION,
                 gen_kwargs={
