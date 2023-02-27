@@ -80,7 +80,7 @@ def load_dataset(
         path=data_args.metric_paths["spider_dates"], config_name=data_args.metric_config, test_suite_db_dir=data_args.test_suite_db_dir
     )
 
-    _spider_dates_dataset_dict : Callable[[], DatasetDict] = lambda: datasets.load.load_dataset(
+    _dk_spider_dates_dataset_dict : Callable[[], DatasetDict] = lambda: datasets.load.load_dataset(
         path=data_args.dataset_paths['dk_spider_dates'], cache_dir=model_args.cache_dir
     )
     _dk_spider_dates_metric: Callable[[], Metric] = lambda: datasets.load.load_metric(
