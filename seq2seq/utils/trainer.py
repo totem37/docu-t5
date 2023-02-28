@@ -7,11 +7,23 @@ import transformers.trainer_seq2seq
 from transformers.file_utils import WEIGHTS_NAME
 from transformers.modeling_utils import unwrap_model, PreTrainedModel
 from transformers.trainer_utils import PredictionOutput, speed_metrics
+from transformers.deepspeed import is_deepspeed_zero3_enabled
+from transformers.optimization import get_scheduler, Adafactor, AdamW
+from transformers.trainer_pt_utils import get_parameter_names
+from transformers.trainer_utils import ShardedDDPOption
+from transformers.file_utils import is_sagemaker_mp_enabled
 from datasets.arrow_dataset import Dataset
 from datasets.metric import Metric
+from packaging import version
 import numpy as np
 import time
 import os
+
+if version.parse(torch.__version__) >= version.parse("1.6"):
+    from torch.cuda.amp import autocast
+    
+if is_sagemaker_mp_enabled():
+    import smdistributed.modelparallel.torch as smp
 
 TRAINING_ARGS_NAME = "training_args.bin"
 
@@ -211,14 +223,23 @@ class Seq2SeqTrainer(transformers.trainer_seq2seq.Seq2SeqTrainer):
         gen_kwargs = {
             "max_length": self._max_length if self._max_length is not None else unwrapped_model.config.max_length,
             "num_beams": self._num_beams if self._num_beams is not None else unwrapped_model.config.num_beams,
-            "synced_gpus": False,
+            "synced_gpus":  True if is_deepspeed_zero3_enabled() else False,
         }
 
-        generated_tokens = unwrapped_model.generate(
-            inputs["input_ids"],
-            attention_mask=inputs["attention_mask"],
-            **gen_kwargs,
-        )
+        if "relations" in inputs.keys():
+            generated_tokens = unwrapped_model.generate(
+                inputs["input_ids"],
+                attention_mask=inputs["attention_mask"],
+                relations=inputs["relations"],
+                **gen_kwargs,
+            )
+        else:
+            generated_tokens = unwrapped_model.generate(
+                inputs["input_ids"],
+                attention_mask=inputs["attention_mask"],
+                **gen_kwargs,
+            )
+            
         # in case the batch is shorter than max length, the output should be padded
         if generated_tokens.shape[-1] < gen_kwargs["max_length"]:
             generated_tokens = self._pad_tensors_to_max_len(generated_tokens, gen_kwargs["max_length"])
@@ -276,3 +297,48 @@ class Seq2SeqTrainer(transformers.trainer_seq2seq.Seq2SeqTrainer):
         # Good practice: save your training arguments together with the trained model
         torch.save(self.args, os.path.join(output_dir, TRAINING_ARGS_NAME))
 
+    def create_optimizer(self):
+        """
+        Setup the optimizer.
+        We provide a reasonable default that works well. If you want to use something else, you can pass a tuple in the
+        Trainer's init through `optimizers`, or subclass and override this method in a subclass.
+        """
+        if self.optimizer is None:
+            decay_parameters = get_parameter_names(self.model, [nn.LayerNorm])
+            decay_parameters = [name for name in decay_parameters if "bias" not in name]
+            # decay_parameters = [name for name in decay_parameters if "shared" not in name]
+            optimizer_grouped_parameters = [
+                {
+                    "params": [p for n, p in self.model.named_parameters() if n in decay_parameters],
+                    "weight_decay": self.args.weight_decay,
+                },
+                {
+                    "params": [p for n, p in self.model.named_parameters() if n not in decay_parameters],
+                    "weight_decay": 0.0,
+                },
+            ]
+            optimizer_cls = Adafactor if self.args.adafactor else AdamW
+            if self.args.adafactor:
+                optimizer_cls = Adafactor
+                optimizer_kwargs = {"scale_parameter": False, "relative_step": False}
+            else:
+                optimizer_cls = AdamW
+                optimizer_kwargs = {
+                    "betas": (self.args.adam_beta1, self.args.adam_beta2),
+                    "eps": self.args.adam_epsilon,
+                }
+            optimizer_kwargs["lr"] = self.args.learning_rate
+            if self.sharded_ddp == ShardedDDPOption.SIMPLE:
+                self.optimizer = OSS(
+                    params=optimizer_grouped_parameters,
+                    optim=optimizer_cls,
+                    **optimizer_kwargs,
+                )
+            else:
+                self.optimizer = optimizer_cls(optimizer_grouped_parameters, **optimizer_kwargs)
+
+        if is_sagemaker_mp_enabled():
+        self.optimizer = smp.DistributedOptimizer(self.optimizer)
+
+        return self.optimizer
+        
