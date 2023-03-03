@@ -1,7 +1,7 @@
 {
     "run_name": "docut5-dates-spider-dev-eval-small",
     "model_name_or_path": "totem37/DocuT5-Small-SD-Dates",
-    "dataset": "spider_dates",
+    "dataset": "spider",
     "source_prefix": "",
     "schema_serialization_type": "peteshaw",
     "schema_serialization_randomized": false,
