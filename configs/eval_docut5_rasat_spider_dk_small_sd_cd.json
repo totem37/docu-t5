@@ -1,5 +1,5 @@
 {
-    "run_name": "rasat-spider-eval-schemad-small-cd",
+    "run_name": "rasat-spider-dk-eval-schemad-small-cd",
     "model_name_or_path": "totem37/DocuT5-RASAT-Small-SD",
     "dataset": "spider_dk",
     "source_prefix": "",
