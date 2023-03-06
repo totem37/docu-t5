@@ -918,18 +918,13 @@ def evaluate(
         pseq_one = []
         for l in f.readlines():
             if len(l.strip()) == 0:
-                plist.append(pseq_one)
-                pseq_one = []
+                pseq_one.append(['', ''])
             else:
                 pseq_one.append(l.strip().split("\t"))
 
         if len(pseq_one) != 0:
             plist.append(pseq_one)
 
-    if len(plist) == len(glist) - 1:
-        extra_gold_index = glist.index({'query': 'SELECT name ,  country  FROM singer ORDER BY birthday ASC'})
-        del glist[extra_gold_index]
-            
     assert len(plist) == len(glist), "number of sessions must equal"
 
     evaluator = Evaluator(db_dir, kmaps, etype, plug_value, keep_distinct, progress_bar_for_each_datapoint)
