@@ -27,7 +27,7 @@ def process_dataset(processor, dataset, tables, dataset_name, mode, output_path_
     for idx, entry in tqdm(enumerate(dataset)):
         # if idx > 100:
         #     continue
-        if dataset_name in ["spider", "spider_dk"]:
+        if "spider" in dataset_name:
             entry = processor.pipeline(entry, tables[entry['db_id']], dataset_name, idx)
         elif dataset_name in ["cosql", "sparc"]:
             entry = processor.pipeline(entry, tables[entry['database_id']], dataset_name, idx)
@@ -68,6 +68,10 @@ def init_dataset_path(data_base_dir, dataset_name, mode):
             
         elif dataset_name == "spider_dk":
             dataset_path = os.path.join(data_base_dir, "ori_dataset", dataset_name, "spider-DK.json")
+        elif dataset_name == "spider_dates":
+            dataset_path = os.path.join(data_base_dir, "ori_dataset", dataset_name, "dev_spider_dates.json")
+        elif dataset_name == "dk_spider_dates":
+            dataset_path = os.path.join(data_base_dir, "ori_dataset", dataset_name, "dk_spider_dates.json")
         else:
             raise NotImplementedError
         # dataset_output_path=os.path.join(data_base_dir, "preprocessed_dataset", dataset_name, "dev.bin")

@@ -187,7 +187,7 @@ def modify_tables_sparc(load_dict):
     return load_dict
  
 def align_tables_by_dataset_name(dataset_name, tables):
-    if dataset_name in ["spider", "spider_dk"]:
+    if "spider" in dataset_name:
         tables = modify_tables_spider(tables)
     elif dataset_name == "cosql":
         tables = modify_tables_cosql(tables)

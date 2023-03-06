@@ -294,7 +294,7 @@ class Preprocessor():
         """ Tokenize, lemmatize, lowercase question"""
 
         if turn == "-1":
-            if dataset_name == "spider_dk":
+            if dataset_name == "spider_dk" or dataset_name == "dk_spider_dates":
                 question = entry["question"]
             else:
                 question = " ".join(quote_normalization(dataset_name, data_idx, entry["question_toks"]))
