@@ -1,0 +1,371 @@
+0 medium pred: select t1.name, t1.country from singer as t1 join singer_in_concert as t2 on
+0 medium gold: SELECT name ,  country  FROM singer ORDER BY birthday ASC
+
+1 medium pred: select name, song_release_year from singer order by birthday limit 1
+1 medium gold: SELECT song_name ,  song_release_year FROM singer ORDER BY birthday desc LIMIT 1
+
+2 medium pred: select name, song_release_year from singer order by birthday limit 1
+2 medium gold: SELECT song_name ,  song_release_year FROM singer ORDER BY birthday desc LIMIT 1
+
+3 medium pred: select distinct country from singer as t1 join singer_in_concert as t2 on
+3 medium gold: SELECT DISTINCT country FROM singer WHERE birthday  like '2001%'
+
+4 medium pred: select distinct country from singer as t1 join singer_in_concert as t2 on
+4 medium gold: SELECT DISTINCT country FROM singer WHERE birthday  like  '2001%'
+
+5 hard pred: select name from singer where birthday > (select avg(birthday) from singer)
+5 hard gold: SELECT song_name FROM singer WHERE birthday  <  (SELECT avg(birthday) FROM singer)
+
+6 easy pred: select count(*) from concert where year > 2014
+6 easy gold: SELECT count(*) FROM concert WHERE YEAR  >=  2014
+
+7 easy pred: select count(*) from concert where year > 2014
+7 easy gold: SELECT count(*) FROM concert WHERE YEAR  >=  2014
+
+8 extra pred: select name, capacity from stadium order by capacity desc limit 1
+8 extra gold: SELECT T2.name ,  T2.capacity FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  >=  2014 GROUP BY T2.stadium_id ORDER BY count(*) DESC LIMIT 1
+
+9 extra pred: select t2.name, t2.highest from concert as t1 join stadium as t2 on t1.stadium_id = t2.stadium_id join concert as t3 on t1.concert_id = t3.concert_id where t1.year > 2013 group by t1.stadium_id order by count(*) desc limit 1
+9 extra gold: SELECT T2.name ,  T2.capacity FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  >=  2014 GROUP BY T2.stadium_id ORDER BY count(*) DESC LIMIT 1
+
+10 medium pred: select concert_name from concert order by year desc limit 1
+10 medium gold: SELECT concert_Name FROM concert ORDER BY YEAR asc LIMIT 1
+
+11 medium pred: select concert_name from concert order by year desc limit 1
+11 medium gold: SELECT concert_Name FROM concert ORDER BY YEAR asc LIMIT 1
+
+12 extra pred: select country from singer where birth
+12 extra gold: SELECT country FROM singer WHERE birthday  like  '1981%' or birthday  like  '1991%'
+
+13 hard pred: select average from stadium except select t2.name from concert as t1 join stadium as t2 on t1.stadium_id = t2.stadium_id where t1.year = 2014
+13 hard gold: SELECT average FROM stadium EXCEPT SELECT T2.average FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014
+
+14 hard pred: select t3.name from singer_in_concert as t1 join concert as t2 on t1.concert_id = t2.concert_id join singer as t3 on
+14 hard gold: SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  >=  2014
+
+15 hard pred: select t3.name from singer_in_concert as t1 join concert as t2 on t1.concert_id = t2.concert_id join
+15 hard gold: SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  <=  2014
+
+16 medium pred: select weight from pets order by birthdate desc limit 1
+16 medium gold: SELECT weight FROM pets ORDER BY birthdate desc LIMIT 1
+
+17 medium pred: select weight from pets order by weight asc limit 1
+17 medium gold: SELECT weight FROM pets ORDER BY birthdate desc LIMIT 1
+
+18 medium pred: select count(*) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t3.age > 20
+18 medium gold: SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20
+
+19 medium pred: select distinct t1.pettype, t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid order by t1.birthdate desc limit 1
+19 medium gold: SELECT pettype ,  weight FROM pets ORDER BY birthdate desc LIMIT 1
+
+20 medium pred: select pettype, weight from pets order by weight asc limit 1
+20 medium gold: SELECT pettype ,  weight FROM pets ORDER BY birthdate desc LIMIT 1
+
+21 medium pred: select petid, weight from pets where birthdate > (select max(birthdate) from pets where birthdate like "2020%")
+21 medium gold: SELECT petid ,  weight FROM pets WHERE birthdate  <  '2020-01-01'
+
+22 medium pred: select petid, weight from pets where birthdate > (select max(birthdate) from pets where birthdate like "2020%")
+22 medium gold: SELECT petid ,  weight FROM pets WHERE birthdate  <  '2020-05-01'
+
+23 extra pred: select t1.lname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t3.petid = t2.petid where t3.birthdate = 2001 and t3.pettype = 'cat'
+23 extra gold: SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.birthdate  like  '2001%' AND T3.pettype  =  'cat'
+
+24 extra pred: select t1.lname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t3.petid = t2.petid where t3.birthdate = 2001 and t3.pettype = 'cat'
+24 extra gold: SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.birthdate  like '2001%' AND T3.pettype  =  'cat'
+
+25 extra pred: select t3.make, t2.year from model_list as t1 join car_makers on t1.model = t2.id join car_names as t3 on t1.model = t3.id
+25 extra gold: SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);
+
+26 extra pred: select t1.maker, t2.year from car_makers as t1 join cars_data as t2 on t1.id = t2.modelid
+26 extra gold: SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);
+
+27 hard pred: select distinct model from model_list where year < 1980 or year = "null
+27 hard gold: SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  <=  1980;
+
+28 hard pred: select distinct t1.model from model_list as t1 join car_makers as t2 on t1.modelid = t2.id where t
+28 hard gold: SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  <=  1980;
+
+29 medium pred: select avg(weight), year from cars_data group by year
+29 medium gold: SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;
+
+30 medium pred: select avg(weight), year from cars_data group by year
+30 medium gold: SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;
+
+31 easy pred: select avg(s
+31 easy gold: SELECT avg(horsepower) FROM CARS_DATA WHERE YEAR  <=  1980;
+
+32 easy pred: select avg(h
+32 easy gold: SELECT avg(horsepower) FROM CARS_DATA WHERE YEAR  <=  1980;
+
+33 extra pred: select max(t2.mpg) from cars_data as t1 join car_makers as t2
+33 extra gold: SELECT mpg FROM CARS_DATA WHERE Cylinders  =  8 OR YEAR  <=  1980 ORDER BY mpg DESC LIMIT 1;
+
+34 extra pred: select max(mpg) from cars_data where cylinders >= 8 union select max(mpg) from cars_data where year < 1980
+34 extra gold: SELECT mpg FROM CARS_DATA WHERE Cylinders  =  8 OR YEAR  <=  1980 ORDER BY mpg DESC LIMIT 1;
+
+35 extra pred: select t1.date_effective_to from templates as t1 join documents as t2 on t2.template_id = t1.template_id group by t1.template_type_code order by count(*) desc limit 1
+35 extra gold: SELECT T2.Date_Effective_From ,  T2.Date_Effective_To FROM Documents AS T1 JOIN Templates AS T2 ON T1.template_id  =  T2.template_id GROUP BY T1.template_id ORDER BY count(*) DESC LIMIT 1
+
+36 extra pred: select t1.date_effective_to from templates as t1 join documents as t2 on t2.template_id = t1.template_id group By t1.template_id order by count(*) desc limit 1
+36 extra gold: SELECT T2.Date_Effective_From ,  T2.Date_Effective_To FROM Documents AS T1 JOIN Templates AS T2 ON T1.template_id  =  T2.template_id GROUP BY T1.template_id ORDER BY count(*) DESC LIMIT 1
+
+37 medium pred: select date_effective_from, template_type_code from templates
+37 medium gold: SELECT Date_Effective_From ,  Date_Effective_To ,  template_type_code FROM Templates
+
+38 medium pred: select date_effective_from, template_type_code from templates
+38 medium gold: SELECT Date_Effective_From ,  Date_Effective_To ,  template_type_code FROM Templates
+
+39 medium pred: select date_effective_to from templates
+39 medium gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates
+
+40 medium pred: select date_effective_from from templates
+40 medium gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates
+
+41 extra pred: select date_effective_to from templates where template_type_code = 'PP' or template_type_code = 'PPT'
+41 extra gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates WHERE template_type_code  =  "PP" OR template_type_code  =  "PPT"
+
+42 extra pred: select date_effective_to from templates where template_type_code = 'PP' or template_type_code = 'PPT'
+42 extra gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates WHERE template_type_code  =  "PP" OR template_type_code  =  "PPT"
+
+43 medium pred: select date_effective_to from templates where template_type_code = "CV"
+43 medium gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates WHERE template_type_code  =  "CV"
+
+44 medium pred: select date_effective_to from templates where template_type_code = "CV"
+44 medium gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates WHERE template_type_code  =  "CV"
+
+45 medium pred: select date_effective_from, template_type_code from templates where version_number < 5
+45 medium gold: SELECT Date_Effective_From ,  Date_Effective_To ,  template_type_code FROM Templates WHERE version_number  >  5
+
+46 medium pred: select date_effective_from, template_type_code from templates where version_number > 5
+46 medium gold: SELECT Date_Effective_From ,  Date_Effective_To ,  template_type_code FROM Templates WHERE version_number  >  5
+
+47 medium pred: select date_effective_from, count(*) from templates group by date_effective_to
+47 medium gold: SELECT Date_Effective_From ,  Date_Effective_To ,  count(*) FROM Templates GROUP BY template_type_code
+
+48 medium pred: select date_effective_to, count(*) from templates group by date_effective_to
+48 medium gold: SELECT Date_Effective_From ,  Date_Effective_To ,  count(*) FROM Templates GROUP BY template_type_code
+
+49 hard pred: select date_effective_to from templates group by date_effective_to order by count(*) desc limit 1
+49 hard gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates GROUP BY template_type_code ORDER BY count(*) DESC LIMIT 1
+
+50 hard pred: select date_effective_to from templates group by date_effective_to order by count(*) desc limit 1
+50 hard gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates GROUP BY template_type_code ORDER BY count(*) DESC LIMIT 1
+
+51 medium pred: select date_effective_to from templates group by date_effective_to having count(*) < 3
+51 medium gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates GROUP BY template_type_code HAVING count(*)  <  3
+
+52 medium pred: select date_effective_to from templates group by date_effective_to having count(*) < 3
+52 medium gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates GROUP BY template_type_code HAVING count(*)  <  3
+
+53 medium pred: select min(version_number), date_effective_to from templates
+53 medium gold: SELECT min(Version_Number) ,  Date_Effective_From ,  Date_Effective_To FROM Templates
+
+54 medium pred: select version_number, date_effective_to from templates order by date_effective_from limit 1
+54 medium gold: SELECT min(Version_Number) ,  Date_Effective_From ,  Date_Effective_To FROM Templates
+
+55 medium pred: select t2.date_effective_to from documents as t1 join templates as t2 on t1.document_id = t2.document_id
+55 medium gold: SELECT T1.Date_Effective_From ,  T1.Date_Effective_To FROM Templates AS T1 JOIN Documents AS T2 ON T1.template_id  =  T2.template_id WHERE T2.document_name  =  "Data base"
+
+56 medium pred: select t1.date_effective_to from templates as t1 join documents as t2 on t1.
+56 medium gold: SELECT T1.Date_Effective_From ,  T1.Date_Effective_To FROM Templates AS T1 JOIN Documents AS T2 ON T1.template_id  =  T2.template_id WHERE T2.document_name  =  "Data base"
+
+57 medium pred: select date_effective_from, date_effective_to, count(*) from documents
+57 medium gold: SELECT T1.Date_Effective_From ,  T1.Date_Effective_To ,  count(*) FROM Templates AS T1 JOIN Documents AS T2 ON T1.template_id  =  T2.template_id GROUP BY T1.template_type_code
+
+58 medium pred: select date_effective_from, date_effective_to, count(*) from documents
+58 medium gold: SELECT T1.Date_Effective_From ,  T1.Date_Effective_To ,  count(*) FROM Templates AS T1 JOIN Documents AS T2 ON T1.template_id  =  T2.template_id GROUP BY T1.template_type_code
+
+59 extra pred: select date_effective_to from documents
+59 extra gold: SELECT T1.Date_Effective_From ,  T1.Date_Effective_To FROM Templates AS T1 JOIN Documents AS T2 ON T1.template_id  =  T2.template_id GROUP BY T1.template_type_code ORDER BY count(*) DESC LIMIT 1
+
+60 extra pred: select date_effective_to from documents
+60 extra gold: SELECT T1.Date_Effective_From ,  T1.Date_Effective_To FROM Templates AS T1 JOIN Documents AS T2 ON T1.template_id  =  T2.template_id GROUP BY T1.template_type_code ORDER BY count(*) DESC LIMIT 1
+
+61 extra pred: select date_effective_from, date_effective_to from documents
+61 extra gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates EXCEPT SELECT Date_Effective_From ,  Date_Effective_To FROM Templates AS T1 JOIN Documents AS T2 ON T1.template_id  =  T2.template_id
+
+62 extra pred: select date_effective_to, date_effective_to from templates where template_id not in (select template_id from documents)
+62 extra gold: SELECT Date_Effective_From ,  Date_Effective_To FROM Templates EXCEPT SELECT Date_Effective_From ,  Date_Effective_To FROM Templates AS T1 JOIN Documents AS T2 ON T1.template_id  =  T2.template_id
+
+63 medium pred: select date_effective_from from templates where template_type_description like "%presentation%"
+63 medium gold: SELECT T2.Date_Effective_From ,  T2.Date_Effective_To FROM Ref_template_types AS T1 JOIN Templates AS T2 ON T1.template_type_code  = T2.template_type_code WHERE T1.template_type_description  =  "Presentation"
+
+64 medium pred: select t1.date_effective_to from templates as t1 join ref_template_types as t2 on t1.template_type_code = t2.template_type_code where t2.
+64 medium gold: SELECT T2.Date_Effective_From ,  T2.Date_Effective_To FROM Ref_template_types AS T1 JOIN Templates AS T2 ON T1.template_type_code  = T2.template_type_code WHERE T1.template_type_description  =  "Presentation"
+
+65 medium pred: select first_name, birth_date from players where country_code = "USA"
+65 medium gold: SELECT first_name ,  birth_date FROM players WHERE country_code  =  'USA'
+
+66 medium pred: select first_name, birth_date from players where country_code = "USA"
+66 medium gold: SELECT first_name ,  birth_date FROM players WHERE country_code  =  'USA'
+
+67 extra pred: select t2.player_
+67 extra gold: SELECT loser_name, winner_name FROM matches WHERE YEAR  =  2013 OR YEAR  =  2016
+
+68 medium pred: select first_name, country_code from players order by birth_date desc limit 1
+68 medium gold: SELECT first_name ,  country_code FROM players ORDER BY birth_date LIMIT 1
+
+69 medium pred: select first_name, country_code from players order by birth_date desc limit 1
+69 medium gold: SELECT first_name ,  country_code FROM players ORDER BY birth_date LIMIT 1
+
+70 medium pred: select first_name, last_name from players order by birth_date
+70 medium gold: SELECT first_name ,  last_name FROM players ORDER BY birth_date
+
+71 medium pred: select first_name, last_name from players order by birth_date desc
+71 medium gold: SELECT first_name ,  last_name FROM players ORDER BY birth_date
+
+72 medium pred: select t1.first_name, t1.last_name from players as t1 join matches as t2 on t1.player_id = t2.loser_id where t1.hand = 'L' order by t1.birth_date desc
+72 medium gold: SELECT first_name ,  last_name FROM players WHERE hand  =  'L' ORDER BY birth_date
+
+73 medium pred: select hand from players where birth_date like '%jung%' order by birth_date
+73 medium gold: SELECT first_name ,  last_name FROM players WHERE hand  =  'L' ORDER BY birth_date desc
+
+74 hard pred: select year from matches group by year order by count(*) desc limit 1
+74 hard gold: SELECT YEAR FROM matches GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1
+
+75 hard pred: select year from matches group by year order by count(*) desc limit 1
+75 hard gold: SELECT YEAR FROM matches GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1
+
+76 medium pred: select sum(t1.tours), t2.rank
+76 medium gold: SELECT sum(tours) ,  ranking_date FROM rankings GROUP BY ranking_date
+
+77 medium pred: select count(*), sum(t1.tours) from rankings as t1 join players as t2 on t1.player_id = t2.player_id group by t1.ranking_date
+77 medium gold: SELECT sum(tours) ,  ranking_date FROM rankings GROUP BY ranking_date
+
+78 medium pred: select count(*), year from matches group by year
+78 medium gold: SELECT count(*) ,  YEAR FROM matches GROUP BY YEAR
+
+79 medium pred: select year, count(*) from matches group by year
+79 medium gold: SELECT count(*) ,  YEAR FROM matches GROUP BY YEAR
+
+80 medium pred: select winner_name, winner_rank from matches order by winner_age asc limit 3
+80 medium gold: SELECT DISTINCT winner_name ,  winner_rank FROM matches ORDER BY winner_age LIMIT 3
+
+81 medium pred: select winner_name, winner_rank from matches order by winner_age asc limit 3
+81 medium gold: SELECT DISTINCT winner_name ,  winner_rank FROM matches ORDER BY winner_age LIMIT 3
+
+82 hard pred: select t2.winner_name, t2.birth_date from matches as t1 join players as t2
+82 hard gold: SELECT T1.first_name , T1.last_name ,  T1.birth_date FROM players AS T1 JOIN matches AS T2 ON T1.player_id  =  T2.winner_id ORDER BY T2.winner_rank_points DESC LIMIT 1
+
+83 hard pred: select t1.first_name, t1.birth_date from players as t1 join matches as t2 on t1.player_id = t2.winner_id group by t2.winner_id order by count(*) desc limit 1
+83 hard gold: SELECT T1.first_name , T1.last_name  ,  T1.birth_date FROM players AS T1 JOIN matches AS T2 ON T1.player_id  =  T2.winner_id ORDER BY T2.winner_rank_points DESC LIMIT 1
+
+84 easy pred: select record_company from orchestra order by year_of_founded desc
+84 easy gold: SELECT Record_Company FROM orchestra ORDER BY Year_of_Founded asc
+
+85 easy pred: select record_company from orchestra order by year_of_founded
+85 easy gold: SELECT Record_Company FROM orchestra ORDER BY Year_of_Founded asc
+
+86 hard pred: select t1.name from conductor as t1 join orchestra as t2 on t1.orchestr
+86 hard gold: SELECT T1.Name FROM conductor AS T1 JOIN orchestra AS T2 ON T1.Conductor_ID  =  T2.Conductor_ID order by Year_of_Founded asc limit 1
+
+87 medium pred: select t2.record_company from performance as t1 join orchestra as t2 on t1.orchestr
+87 medium gold: SELECT Record_Company FROM orchestra ORDER BY Year_of_Founded asc LIMIT 1
+
+88 medium pred: select record_company from orchestra order by year_of_founded desc limit 1
+88 medium gold: SELECT Record_Company FROM orchestra ORDER BY Year_of_Founded desc LIMIT 1
+
+89 easy pred: select record_company from orchestra where year_of_founded < 2003
+89 easy gold: SELECT Record_Company FROM orchestra WHERE Year_of_Founded  <=  2003
+
+90 easy pred: select record_company from orchestra where year_of_founded >= 2003
+90 easy gold: SELECT Record_Company FROM orchestra WHERE Year_of_Founded  >=  2003
+
+91 medium pred: select t1.date_of_treatment, t1.name from treatment_types as t2 join professionals as t3 on t1.professional_id = t2.prof
+91 medium gold: SELECT T1.date_of_treatment ,  T2.first_name , T2.last_name FROM Treatments AS T1 JOIN Professionals AS T2 ON T1.professional_id  =  T2.professional_id
+
+92 medium pred: select t2.date_of_treatment, t1.first_name, t1.last_name from treatments as t1
+92 medium gold: SELECT T1.date_of_treatment ,  T2.first_name , T2.last_name FROM Treatments AS T1 JOIN Professionals AS T2 ON T1.professional_id  =  T2.professional_id
+
+93 medium pred: select date_arrived, date_departed from treatments as t1 join dogs as t2 on t1.dog_id = t2.dog_id
+93 medium gold: SELECT DISTINCT T1.date_arrived ,  T1.date_departed FROM Dogs AS T1 JOIN Treatments AS T2 ON T1.dog_id  =  T2.dog_id
+
+94 medium pred: select date_of_treatment from treatments where date_departed >= '2004-04-19 15:06:20' and date_arrived < '2016-03-15 00:33:18
+94 medium gold: SELECT DISTINCT T1.date_arrived ,  T1.date_departed FROM Dogs AS T1 JOIN Treatments AS T2 ON T1.dog_id  =  T2.dog_id
+
+95 extra pred: select t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id order by t2.date_of_birth desc limit 1
+95 extra gold: SELECT T1.last_name FROM Owners AS T1 JOIN Dogs AS T2 ON T1.owner_id  =  T2.owner_id WHERE T2.age  =  ( SELECT max(age) FROM Dogs )
+
+96 extra pred: select t2.last_name from dogs as t1 join owners as t2 on t1.owner_id = t2.owner_id order by t1.age limit 1
+96 extra gold: SELECT T1.last_name FROM Owners AS T1 JOIN Dogs AS T2 ON T1.owner_id  =  T2.owner_id WHERE T2.age  =  ( SELECT max(age) FROM Dogs )
+
+97 medium pred: select date_arrived, date_adopted from dogs where abandoned_yn = '1'
+97 medium gold: SELECT date_arrived ,  date_departed FROM Dogs where abandoned_yn = 1
+
+98 medium pred: select date_arrived, date_adopted from dogs where abandoned_yn = '1'
+98 medium gold: SELECT date_arrived ,  date_departed FROM Dogs where abandoned_yn = 1
+
+99 medium pred: select max(cost_of_treatment) from treatments
+99 medium gold: SELECT cost_of_treatment FROM Treatments ORDER BY date_of_treatment DESC LIMIT 1
+
+100 easy pred: select age from dogs order by age desc limit 1
+100 easy gold: SELECT max(age) FROM Dogs
+
+101 easy pred: select age from dogs order by age desc limit 1
+101 easy gold: SELECT max(age) FROM Dogs
+
+102 medium pred: select birth_year, citizenship from singer
+102 medium gold: SELECT Birth_Year ,  Citizenship FROM singer
+
+103 medium pred: select birth_year, citizenship from singer
+103 medium gold: SELECT Birth_Year ,  Citizenship FROM singer
+
+104 easy pred: select name from singer where birth_year < 1948 or birth_year >= "Song_id"
+104 easy gold: SELECT Name FROM singer WHERE Birth_Year  <=  1948
+
+105 easy pred: select name from singer where birth_year < 1948 or birth_year >= "Song_id"
+105 easy gold: SELECT Name FROM singer WHERE Birth_Year  <=  1948
+
+106 medium pred: select name from singer order by birth_year asc limit 1
+106 medium gold: SELECT Name FROM singer ORDER BY Birth_Year DESC LIMIT 1
+
+107 medium pred: select name from singer order by birth_year asc limit 1
+107 medium gold: SELECT Name FROM singer ORDER BY Birth_Year DESC LIMIT 1
+
+108 easy pred: select citizenship from singer where birth_year < 1945 or birth_year = 1945
+108 easy gold: SELECT Citizenship FROM singer WHERE Birth_Year  <=  1945
+
+109 easy pred: select citizenship from singer where birth_year < 1945 or birth_year = 1945
+109 easy gold: SELECT Citizenship FROM singer WHERE Birth_Year  <=  1945
+
+                     easy                 medium               hard                 extra                all                 
+count                14                   63                   13                   20                   110                 
+=====================   EXECUTION ACCURACY     =====================
+execution            0.429                0.254                0.154                0.150                0.245               
+
+====================== EXACT MATCHING ACCURACY =====================
+exact match          0.143                0.222                0.154                0.000                0.164               
+
+---------------------PARTIAL MATCHING ACCURACY----------------------
+select               0.833                0.596                0.500                0.417                0.595               
+select(no AGG)       1.000                0.615                0.500                0.500                0.643               
+where                0.125                0.692                0.000                0.286                0.414               
+where(no OP)         0.500                0.923                1.000                0.714                0.759               
+group(no Having)     0.000                0.556                0.400                0.667                0.529               
+group                0.000                0.556                0.400                0.667                0.529               
+order                0.250                0.300                0.800                0.500                0.400               
+and/or               1.000                1.000                1.000                0.800                0.962               
+IUEN                 0.000                0.000                0.000                0.000                0.000               
+keywords             0.417                0.650                0.857                0.417                0.592               
+---------------------- PARTIAL MATCHING RECALL ----------------------
+select               0.714                0.492                0.308                0.250                0.455               
+select(no AGG)       0.857                0.508                0.308                0.300                0.491               
+where                0.100                0.474                0.000                0.143                0.250               
+where(no OP)         0.400                0.632                0.200                0.357                0.458               
+group(no Having)     0.000                0.417                0.500                0.333                0.409               
+group                0.000                0.417                0.500                0.333                0.409               
+order                0.500                0.273                0.571                0.375                0.359               
+and/or               0.714                1.000                1.000                1.000                0.962               
+IUEN                 0.000                0.000                0.000                0.000                0.000               
+keywords             0.417                0.510                0.462                0.250                0.438               
+---------------------- PARTIAL MATCHING F1 --------------------------
+select               0.769                0.539                0.381                0.312                0.515               
+select(no AGG)       0.923                0.557                0.381                0.375                0.557               
+where                0.111                0.562                1.000                0.190                0.312               
+where(no OP)         0.444                0.750                0.333                0.476                0.571               
+group(no Having)     1.000                0.476                0.444                0.444                0.462               
+group                1.000                0.476                0.444                0.444                0.462               
+order                0.333                0.286                0.667                0.429                0.378               
+and/or               0.833                1.000                1.000                0.889                0.962               
+IUEN                 1.000                1.000                1.000                1.000                1.000               
+keywords             0.417                0.571                0.600                0.312                0.503               
