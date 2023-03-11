@@ -31,4 +31,6 @@ mv dataset_files/ori_dataset/spider-desc dataset_files/ori_dataset/spider_desc
 rm -r dataset_files/ori_dataset/dk_spider_dates
 unzip dataset_files/dk-spider-dates.zip -d dataset_files/ori_dataset/
 mv dataset_files/ori_dataset/dk-spider-dates dataset_files/ori_dataset/dk_spider_dates
+cp dataset_files/ori_dataset/spider/tables.json dataset_files/ori_dataset/spider_syn
+cp dataset_files/ori_dataset/spider/dev_gold.sql dataset_files/ori_dataset/spider_syn
 chmod -R 777 dataset_files/

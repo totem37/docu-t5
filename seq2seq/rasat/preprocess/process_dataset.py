@@ -72,6 +72,8 @@ def init_dataset_path(data_base_dir, dataset_name, mode):
             dataset_path = os.path.join(data_base_dir, "ori_dataset", dataset_name, "dev_spider_dates.json")
         elif dataset_name == "dk_spider_dates":
             dataset_path = os.path.join(data_base_dir, "ori_dataset", dataset_name, "dk_spider_dates.json")
+        elif dataset_name == "spider_syn":
+            dataset_path = os.path.join(data_base_dir, "ori_dataset", dataset_name, "spider-syn.json")
         else:
             raise NotImplementedError
         # dataset_output_path=os.path.join(data_base_dir, "preprocessed_dataset", dataset_name, "dev.bin")

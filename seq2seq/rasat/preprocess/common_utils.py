@@ -296,6 +296,8 @@ class Preprocessor():
         if turn == "-1":
             if dataset_name == "spider_dk" or dataset_name == "dk_spider_dates":
                 question = entry["question"]
+            elif dataset_name == "spider_syn":
+                question = entry["SpiderSynQuestion"]
             else:
                 question = " ".join(quote_normalization(dataset_name, data_idx, entry["question_toks"]))
             # question = "\n".join(self.seperate_sent(question))
