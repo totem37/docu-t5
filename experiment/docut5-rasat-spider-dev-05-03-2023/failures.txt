@@ -45,8 +45,8 @@ select count(*) from stadium order by capacity desc limit 1
 select count(*) from stadium order by capacity desc limit 1
 select count(*) from pets where weight > 10 _EX _EM
 select count(*) from pets where weight > 10 _EX _EM
-select t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid order by t3.age limit 1
-select weight from pets order by weight asc limit 1 _EX
+select t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog' and t3.age = (select min(age) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog')
+select t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog' and t3.age = (select min(age) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog')
 select max(weight), pettype from pets group by pettype _EX _EM
 select max(weight), max(weight), pettype from pets group by pettype _EX
 select count(*) from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.age > 20 _EX
@@ -55,16 +55,16 @@ select count(*) from has_pet as t1 join pets as t2 on t1.petid = t2.petid join s
 select count(*) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t3.sex = 'F'
 select count(distinct pettype) from pets _EX _EM
 select count(distinct pettype) from pets _EX _EM
-select distinct t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = 'cat' or t3.pettype = 'dog' _EX _EM
-select distinct t3.fname from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t2.pettype = "cat" or t2.pettype = "dog" _EX _EM
-select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = 'cat' intersect select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.petid _EX
-select t3.fname from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t2.pettype = "cat" intersect select t3.fname from has_pet as t1 join pets as t2 on t1.stuid = t2.petid join student as t3 on t2.pet_age = t3.stuid where t2.pettype = "dog" _EX _EM
-select major, age from student where stuid not in (select stuid from has_pet)
-select major, count(*) from student where stuid not in (select stuid from has_pet)
+select distinct t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = "cat" or t3.pettype = "dog" _EX _EM
+select distinct t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = "cat" or t3.pettype = "dog" _EX _EM
+select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = 'cat' intersect select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid where t3.pettype = 'dog
+select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = 'cat' intersect select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid where t3.pettype = 'dog
+select major, age from student where stuid not in (select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'cat') _EX
+select major, count(*) from student where stuid not in (select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'cat')
 select stuid from student except select t1.stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'cat' _EX
 select stuid from student except select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'cat' _EX
-select fname, age from student where stuid not in (select stuid from has_pet)
-select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.stuid = t3.petid where t3.pettype = 'dog' except select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid
+select fname, age from student where stuid not in (select t1.stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'dog' except select t1.stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'cat')
+select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = 'dog' except select t1.fname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid where t3.p
 select t1.pettype, t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid order by t3.age limit 1
 select t1.pettype, t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t3.age = min(age)
 select t1.petid, t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t3.age > 1
@@ -75,14 +75,14 @@ select pettype, avg(weight) from pets group by pettype _EX _EM
 select pettype, avg(weight) from pets group by pettype _EX _EM
 select distinct t1.fname, t1.age from student as t1 join has_pet as t2 on t1.stuid = t2.stuid _EX _EM
 select distinct t1.fname, t1.age from student as t1 join has_pet as t2 on t1.stuid = t2.stuid _EX _EM
+select t1.petid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.lname = 'Smith' _EX
 select t2.petid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.lname = 'Smith'
-select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid
 select count(*), stuid from has_pet group by stuid
 select stuid, count(*) from has_pet group by stuid
 select t1.fname, t1.sex from student as t1 join has_pet as t2 on t1.stuid = t2.stuid group by t1.stuid having count(*) > 1 _EX _EM
 select t1.fname, t1.sex from student as t1 join has_pet as t2 on t1.stuid = t2.stuid group by t1.stuid having count(*) > 1 _EX _EM
 select t1.lname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid where t1.age = 3
-select t1.lname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid where t1.age = 3
+select t1.lname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = 'cat' and t1.age = 3
 select avg(age) from student where stuid not in (select stuid from has_pet) _EX _EM
 select avg(age) from student where stuid not in (select stuid from has_pet) _EX _EM
 select count(*) from continents _EX _EM
@@ -109,11 +109,11 @@ select t1.countryname from countries as t1 join car_makers as t2 on t1.countryid
 select t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country group by t1.countryid order by count(*) desc limit 1 _EX _EM
 select count(*), t1.maker from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.maker
 select count(*), t1.id, t1.fullname from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id _EM
-select t2.accelerate from car_names as t1 join cars_data as t2 on t1.model = t2.id where t1.make = "amc hornet" _EM
-select sum(t1.accelerate) from cars_data as t1 join countries as t2 on t1.country
-select count(distinct t1.id) from car_makers as t1 join countries as t2 on t1.country = t2.countryid where t2.countryname = "France"
+select t2.accelerate from car_names as t1 join cars_data as t2 on t1.makeid = t2.id where t1.make = "amc hornet" and t1.make = "sw"
+select t1.acc
+select count(distinct t1.maker) from car_makers as t1 join countries as t2 on t1.country = t2.countryid where t2.countryname = "France"
 select count(*) from countries where countryname = "France"
-select count(*) from countries where countryname = "United States"
+select count(distinct t1.model) from model_list as t1 join countries as t2 on t2.countryid = t2.countryid where t2.countryname = "Usa"
 select count(*) from model_list where countryid in (select t1.countryid from car_makers as t4 join countries as t5 on t3.countryid = t4.countryid
 select avg(
 select avg(t2.mpg) from cars_data as t1 join cars_data as t2 on t1.id = t2.contin
@@ -127,8 +127,8 @@ select count(*) from cars_data where horsepower > 150 _EX _EM
 select count(*) from cars_data where horsepower > 150 _EX _EM
 select avg(weight), year from cars_data group by year _EX _EM
 select avg(weight), year from cars_data group by year _EX _EM
-select continent from continents group by continent having count(*) >= 3
-select countryname from countries where continent = "europe" group by countryid having count(*) >= 3
+select countryname from countries where continent = "europe" group by countryname having count(*) >= 3
+select countryname from countries where continent = "europe" group by countryname having count(*) >= 3
 select max (select max (select t2.model, t2.make from cars_data as t1 join car_names as t2 on t2.model = t1.id where t1.cylinders = 3
 select t1.make, t1.make from car_names as t1 join cars_data as t2 on t1.model = t2.model
 select model from model_list where model not in (select model from car_names)
@@ -145,20 +145,20 @@ select count(*) from cars_data where cylinders > 4 _EX _EM
 select count(*) from cars_data where cylinders > 4 _EX _EM
 select count(*) from cars_data where year = 1980 _EX _EM
 select count(*) from car_names where make = 1980
-select count(*) from car_makers as t1 join countries as t2 on t1.country = t2.countryid where t1.fullname = "American Motor Company" _EX
-select count(*) from car_makers as t1 join countries as t2 on t1.country = t2.countryid where t1.maker = "American Motor Company"
+select count(*) from car_makers where fullname = 'American Motor Company' _EX
+select count(*) from car_makers where fullname = "American Motor Company" _EX
 select t1.maker, t1.fullname, t1.id from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id having count(*) > 3
 select t1.maker, t1.id from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id having count(*) > 3
-select distinct t1.model from model_list as t1 join countries as t2 on t1.country
-select distinct id from car_makers as t1 join countries as t2 on t1.country = t2.countryid where t1.maker = "General Motors" union select distinct t1.model from car_names as t1 join cars_data as t2 on t1.model = t2.id where t1.make = "3500"
+select distinct t2.model from car_makers as t1 join model_list as t2 on t1.id = t2.modelid where t1.fullname = 'General Motors' union select distinct t2.model from car_makers as t1 join model_list as t2 on t1.id = t2.modelid where t1.fullname = 'General Motors'
+select distinct model from model_list where id = (select t1.model from model_list as t1 join car_makers as t2 on t1.modelid = t2.id where t2.maker = 'General Motors') or t2.weight >
 select year from cars_data group by year having count(*) < 3000 intersect select year from cars_data group by year having count(*) <= 4000 _EX
 select distinct year from cars_data where weight < 4000 intersect select distinct year from cars_data where weight > 3000 _EX
 select horsepower from cars_data order by accelerate desc limit 1 _EX _EM
 select horsepower from cars_data order by accelerate desc limit 1 _EX _EM
-select count(*), mpg from cars_data group by mpg order by count(*) asc limit 1
-select count(*), model from car_names where model = "vovo" group by model order by count(*) asc limit 1
+select count(*), t1.model from model_list as t1 join cars_data as t2 on t1.modelid = t2.model
+select count(*), t1.model from model_list as t1 join cars_data as t2 on t1.model = modelid where t1.model = "volvo" group by t1.model order by count(*) asc limit 1
 select count(distinct t1.id) from cars_data as t1 join cars_data as t2 on t1.id = t2.c
-select count(distinct t1.id) from cars_data as t1 join cars_data as t2 on t1.id = t2.
+car_1 |
 select count(*) from (select id from car_makers group by id having count(*) > 2)
 select count(*) from (select id from car_makers group by id having count(*) > 2)
 select count(*) from cars_data where cylinders > 6 _EX _EM
@@ -169,14 +169,14 @@ select t1.makeid, t1.make from car_names as t1 join cars_data as t2 on t1.makeid
 select makeid, t1.make from car_names as t1 join cars_data as t2 on t1.makeid = t2.id where id not in (select t4.id from cars_data as t3 join cars_data as t4 on t3.id = 4)
 select max(t2.mpg) from cars_data as t1 join cars_data as t2 on t1.id = t2.
 select max(mpg) from cars_data where cylinders = 8 union select mpg from cars_data where year < 1980
-select model from model_list where model > 3500 except select t1.model from model_list as t1 join countries as t2 on t2.countryid = t2.countryid join car_makers as t3 on t1.model = t3.id where t3.fullname = 'Ford Motor Company'
-select distinct model from model_list where model = "3500" except select distinct model from car_makers as t1 join countries as t2 on t1.country = t2.countryid
+select model from model_list where model < 3500 except select model from model_list where maker = 'Ford Motor Company'
+select distinct model from model_list where model = "Mountain Motor Company" except select distinct model from model_list where model = "Ford"
 select countryname from countries where countryid not in (select country from car_makers)
 select countryname from countries except select t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country _EX _EM
 select t1.id, t1.maker from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id having count(*) >= 2
 select t1.id, t1.maker from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id having count(*) >= 2 intersect select t1.id, t1.maker from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id having count(*) > 3
-select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker!= 3 union select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker = 'fiat'
-select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker!= 3 union select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker = "fiat"
+select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker > 3 union select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker = 'fiat'
+select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker > 3 union select t1.countryid, t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country where t2.maker = "fiat"
 select country from airlines where airline = "JetBlue Airways" _EX _EM
 select country from airlines where airline = 'JetBlue Airways' _EX _EM
 select abbreviation from airlines where airline = "JetBlue Airways" _EX _EM
@@ -199,24 +199,24 @@ select city, country from airports where airportname = "Alon" _EX _EM
 select city, country from airports where airportname = "Alon" _EX _EM
 select airportname from airports where airportcode = 'AKO' _EX _EM
 select airportname from airports where airportcode = 'AKO' _EX _EM
-select t1.airportname from airports as t1 join airports as t2 on t1.airportcode = t2.airportcode where t1.city = 'Aberdeen' _EX
+select airportname from airports where city = 'Aberdeen' _EX _EM
 select airportname from airports where city = 'Aberna' _EX _EM
-select count(*) from flights where flightno = 'APG' _EX
-select count(*) from flights where flightno = 'APG' _EX
+select count(*) from flights where sourceairport = 'APG' _EX _EM
+select count(*) from flights where sourceairport = 'APG' _EX _EM
 select count(*) from airports where airportcode = "ATO"
 select count(*) from airports where airportcode = "ATO"
 select count(*) from flights as t1 join airports as t2 on t2.city = t2.city where t2.city = 'Atlanta' _EX _EM
-select count(*) from flights as t1 join airports as t2 on t2.city = t2.city where t1.destairport = 'Aberge' _EX
-select count(*) from airports as t1 join flights as t2 on t1.city = t2.airport
-select count(*) from airports as t1 join flights as t2 on t1.city = t2.airport
-select count(*) from airports as t1 join flights as t2 on t1.city = t2.airport
-select count(*) from airports where city = "Ashley" and airportname = "Ashley" _EX
+select count(*) from flights as t1 join airports as t2 on t2.city = t2.city where t2.city = 'Aberge' _EX _EM
+select count(*) from airports where city = 'Aberge' _EX
+select count(*) from flights as t1 join airports as t2 on t2.airportcode = t2.airportcode where t2.city = 'Aberge' _EX _EM
+select count(*) from flights where city = 'Aberdeen' and city = 'Ashley
+select count(*) from airports as t1 join flights as t2 on t1.airportcode = t2.airport
 select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.uid
 select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.airport
-select count(*) from airlines as t1 join airports as t2 on t1.uid = t2.airportcode where t2.airportcode = 'ASY' _EX
-select count(*) from airlines as t1 join airports as t2 on t1.uid = t2.airportcode where t2.airportcode = 'ASY' _EX
 select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.airport
+select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.uid
 select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.airport
+select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.uid
 select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.airport
 select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.airport
 select city from airports group by city order by count(*) desc limit 1
@@ -231,30 +231,30 @@ select airline from flights group by airline order by count(*) desc limit 1
 select airline from flights group by airline order by count(*) desc limit 1
 select abbreviation, country from airlines group by abbreviation order by count(*) limit 1 _EX
 select t1.abbreviation, t1.country from airlines as t1 join flights as t2 on t1.uid = t2.airport
-select airline from flights where flightno = 'AHD'
-select distinct airline from flights where sourceairport = "AHD"
-select distinct airline from flights where flightno = 'AHD'
-select uid from airports as t1 join flights as t2 on t1.city = t2.airport
-select airline from flights where flightno = 'APG' intersect select airline from flights where flightno = 'CVO'
-select airline from flights where flightno = 'APG' intersect select airline from flights where flightno = 'CVO'
-select airline from flights where flightno = 'CVO' except select airline from flights where flightno = 'APG'
-select airline from airlines where flightno in (select t1.Airline from airlines as t1 join airports as t2 on t1.uid = t2.Airportcode where t2.airportcode = 'CVO' except select t1.airport
+select airline from flights where sourceairport = 'AHD'
+select airline from flights where sourceairport = "AHD"
+select t1.airline from airlines as t1 join flights as t2 on t1.uid = t2.airport
+select airline from flights where sourceairport = "AHD"
+select airline from flights where sourceairport = 'APG' intersect select airline from flights where sourceairport = 'CVO'
+select airline from flights where sourceairport = "APG" intersect select airline from flights where destairport = "CVO"
+select airline from flights where sourceairport = 'CVO' except select airline from flights where sourceairport = 'APG'
+select t1.airline from airlines as t1 join flights as t2 on t1.uid = t2.airport
 select airline from airlines group by airline having count(*) >= 10
 select airline from flights group by airline having count(*) >= 10
 select airline from airlines group by airline having count(*) < 200 _EX
 select airline from airlines group by airline having count(*) < 200 _EX
-select flightno from airlines as t1 join flights as t2 on t1.uid = t2.airport
-select flightno from airlines as t1 join flights as t2 on t1.uid = t2.uid
-select flightno from flights as t1 join airports as t2 on t2.city = t2.city where t2.airportcode = "APG"
-select flightno from flights where destairport = "APG" _EX _EM
-select flightno from flights as t1 join airports as t2 on t2.city = t2.city where t2.airportcode = "APG"
-select flightno from flights where flightno = "APG" _EX
-select flightno from flights as t1 join airports as t2 on t2.city = t2.city where t2.city = "Aberdeen" _EX _EM
-select flightno from flights as t1 join airports as t2 on t2.city = 2 and t2.airportcode = t2.airportcode where t2.city = 'Aberdeen' _EX _EM
-select flightno from flights as t1 join airports as t2 on t2.city = t2.city where t2.city = "Aberdeen" _EX _EM
-select flightno from flights as t1 join airports as t2 on t2.city = t2.city where t2.country = 'Aberge' _EX
+select uid from airlines where airline = "United Airlines"
+select flightno from flights where airline = 'United Airlines'
+select flightno from flights where sourceairport = "APG" _EX _EM
+select flightno from flights where sourceairport = "APG" _EX _EM
+select flightno from flights where sourceairport = "APG" _EX _EM
+select flightno from flights where sourceairport = "APG" _EX _EM
+select flightno from flights as t1 join airports as t2 on t2.airportcode = t2.airportcode where t2.city = "Aberdeen" _EX _EM
+select flightno from flights where city = 'Aberna
+select flightno from flights as t1 join airports as t2 on t2.airportcode = t2.airportcode where t2.city = "Aberdeen" _EX _EM
+select flightno from flights as t1 join airports as t2 on t2.airportcode = t2.airportcode where t2.city = 'Aberge' _EX _EM
 select count(*) from airports where city = "Aberna" or city = "Abilene" _EX
-select count(*) from flights where city = 'Aberna' or country = 'Abilene
+select count(*) from flights where city = 'Aberna' or city = 'Abilene
 select airportname from airports except select t1.airportname from airports as t1 join flights as t2 on t1.airportcode = t2.airport
 select airportname from airports except select t1.airportname from airports as t1 join flights as t2 on t1.airportcode = t2.airport
 select count(*) from employee _EX _EM
@@ -321,7 +321,7 @@ select template_id, version_number, template_type_code from templates _EX _EM
 select template_id, version_number, template_type_code from templates _EX _EM
 select distinct template_type_code from templates _EX _EM
 select distinct template_type_code from templates _EX _EM
-select template_id from templates where template_type_code = "PP" or template_type_code = "PPT" _EX _EM
+select template_id from templates where template_type_code = 'PP' or template_type_code = 'PPT' _EX _EM
 select template_id from templates where template_type_code = 'PP' or template_type_code = 'PPT' _EX _EM
 select count(*) from templates where template_type_code = "CV" _EX _EM
 select count(*) from templates where template_type_code = "CV" _EX _EM
@@ -335,10 +335,10 @@ select template_type_code from templates group by template_type_code having coun
 select template_type_code from templates group by template_type_code having count(*) < 3 _EX _EM
 select min(version_number), template_type_code from templates _EX _EM
 select min(version_number), template_type_code from templates group by template_type_code
-select template_type_code from templates where document_name = "Data base"
-select template_type_code from templates where document_name = (select document_name from documents group by document_name
+cre_Doc_Template_Mgt
+cre_Doc_Template_Mgt
+select t1.document_name from documents as t1 join templates as t2 on
 select t1.document_name from documents as t1 join templates as t2 on t1.document_id = t2.document_id
-select t1.document_name from documents as t1 join templates as t2 on t1.document_id = t2.template_type_code where template_type_code = "BK" _EM
 select template_type_code, count(*) from documents
 select template_type_code, count(*) from documents
 select template_type_code from documents
@@ -353,17 +353,17 @@ select template_type_code from ref_template_types where template_type_descriptio
 select template_type_code from ref_template_types where template_type_description = "Book" _EX _EM
 select distinct template_type_description from ref_template_types
 select distinct template_type_description from templates
-select template_id from templates where template_type_description = "Presentation"
-select template_id from documents where document_description like '%presentation%'
+select 'Presentation' from ref_template_types where template_type_description = "Presentation"
+select template_id from templates where template_type_description like '%presentation%
 select count(*) from paragraphs _EX _EM
 select count(*) from paragraphs _EX _EM
 select count(*) from documents as t1 join paragraphs as t2 on t1.document_id = t2.document_id where t1.document_name = 'Summer Show' _EX _EM
 select count(*) from documents as t1 join paragraphs as t2 on t1.document_id = t2.document_id where t1.document_name = 'Summer Show' _EX _EM
-select paragraphs.other_details from paragraphs as t1 join documents as t2 on t1.paragraph_id = t2.paragraph_id
-select t2.document_description from paragraphs as t1 join documents as t2 on t1.document_id = t2.document_id where t1.paragraph_text like '%kenorea%'
-select t1.paragraph_id, t1.paragraph_text from paragraphs as t1 join documents as t2 on t1.paragraph_id = t2.document_id where t2.document_name = 'Welcome to NY' _EM
-select paragraph_id, paragraph_text from paragraphs as t1 join documents as t2 on t1.document_id = t2.document_id where t2.document_name = 'Welcome to NY' _EX _EM
-select t1.paragraph_text from paragraphs as t1 join documents as t2 on t1.paragraph_id = t2.document_id where t2.document_name = "Customer reviews" _EM
+select t1.other_details from paragraphs as t1 join paragraphs as t2 on t1.paragraph_id = t2.paragraph_id where t1.paragraph_text = 'Korea' _EX
+select t1.other_details from paragraphs as t1 join paragraphs as t2 on t1.paragraph_id = t2.paragraph_id where t1.paragraph_text like '%kenorea%'
+select t1.paragraph_id, t1.paragraph_text from paragraphs as t1 join documents as t2 on t1.document_id = t2.document_id where t2.document_name = 'Welcome to NY' _EX _EM
+select t1.document_id, t1.paragraph_text from paragraphs as t1 join documents as t2 on t1.document_id = t2.document_id where t2.document_name = 'Welcome to NY'
+select t1.paragraph_text from paragraphs as t1 join documents as t2 on t1.document_id = t2.document_id where t2.document_name = "Customer reviews" _EX _EM
 select t1.paragraph_text from paragraphs as t1 join documents as t2 on t1.document_id = t2.document_id where t2.document_name = 'Customer reviews' _EX _EM
 select document_id, count(*) from paragraphs group by document_id order by document_id _EX _EM
 select document_id, count(*) from paragraphs group by document_id order by document_id _EX _EM
@@ -378,15 +378,15 @@ select document_id from paragraphs group by document_id order by count(*) asc li
 select document_id from paragraphs group by document_id having count(*) between 1 and 2 _EX _EM
 select document_id from paragraphs group by document_id having count(*) between 1 and 2 _EX _EM
 select document_id from paragraphs where paragraph_text = 'Brazil' intersect select document_id from paragraphs where paragraph_text = 'Ireland' _EX _EM
-select document_id from paragraphs where paragraph_text like '%brazil%' intersect select document_id from paragraphs where paragraph_text like '%ireland%' _EX
-select count(*), t1.name from teacher as t1 join course_arrange as t2 on t1.teacher_id = t2.teacher_id group by t1.teacher_id
+select document_id from paragraphs where paragraph_text like '%brazil%' intersect select document_id from paragraphs where paragraph_text = 'Ireland%'
+select count(*) from teacher _EX _EM
 select count(*) from teacher _EX _EM
 select name from teacher order by age asc _EX _EM
 select name from teacher order by age asc _EX _EM
 select age, hometown from teacher _EX _EM
 select age, hometown from teacher _EX _EM
-select t2.name from teacher as t1 join teacher as t2 on t1.teacher_id = t2.teacher_id where t1.hometown!= "little lever urban District" _EX
-select t2.name from teacher as t1 join teacher as t2 on t1.teacher_id = t2.teacher_id where t1.hometown!= "little lever urban District" _EX
+select name from teacher where hometown!= 'Billy Lever Urban District' _EX _EM
+select name from teacher where hometown!= 'Billy Lever Urban District' _EX _EM
 select name from teacher where age = 32 or age = 33 _EX _EM
 select name from teacher where age = 32 or age = 33 _EX _EM
 select hometown from teacher order by age asc limit 1 _EX _EM
@@ -449,22 +449,22 @@ select winner_name from matches where year = 2013 intersect select winner_name f
 select t1.first_name, t1.last_name from players as t1 join rankings as t2 on t1.player_id =
 select count(*) from matches where year = 2013 or year = 2016 _EX _EM
 select count(*) from matches where year = 2013 or year = 2016 _EX _EM
-select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id where t2.winner_rank = "WTA Championships" intersect select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id where t2.winner_rank = 'Australian Open'
+select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id where t2.winner_name = "WTA Championships" intersect select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id where t2.winner_name = "Australian Open"
 select t1.first_name, t1.country_code from players as t1 join matches as t2 on t1.player_id = t2.player_id
 select first_name, country_code from players order by birth_date desc limit 1
 select first_name, country_code from players order by birth_date desc limit 1
 select first_name, last_name from players order by birth_date _EM
 select first_name, last_name from players order by birth_date _EM
 select first_name, last_name from players where hand = 'L' order by birth_date _EX _EM
-select first_name, last_name from players order by birth_date
+select first_name, last_name from players where birth_date like '%birth_date%' order by birth_date
 select t1.first_name, t1.country_code from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t2.player_id order by count(*) desc limit 1
 select t1.first_name, t1.country_code from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t2.player_id order by count(*) desc limit 1
 select year from matches group by year order by count(*) desc limit 1 _EX _EM
 select year from matches group by year order by count(*) desc limit 1 _EX _EM
 select t1.
 select t2.winner_name, count(*) from rankings as t1 join matches as t2 on t1
-select t1.winner_name, t2.winner_rank from matches as t1 join matches as t2 on t1.winner_id = t2.winner_id where t2.winner_rank = 'Australian Open' order by t2.winner_rank desc limit 1
-select t1.winner_name from matches as t1 join matches as t2 on t1.winner_id = t2.winner_id where t2.winner_rank = "Australian Open" group by t1.winner_id order by count(*) desc limit 1
+select t1.winner_name from matches as t1 join rankings as t2 on t1.winner_id = t2.winner_id
+select t1.winner_name from matches as t1 join rankings as t2 on t1.winner_id = t2.winner_id
 select loser_name, winner_rank from matches order by minutes desc limit 1
 select t1.winner_name, t1.loser_name from matches as t1 join matches as t2 on t1.loser_id = t2.loser_id order by t2.year desc limit 1
 select avg(t2.ranking_points), t1.first_name from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t1.player_id
@@ -483,10 +483,10 @@ select year, count(*) from matches group by year _EX _EM
 select year, count(*) from matches group by year _EX _EM
 select t1.first_name, t1.rank
 select t1.first_name, t1.last_name, t2.winner_rank from players as t1 join matches as t2 on t1.player_id = t2.winner_id order by t2.year asc limit 3
-select count(distinct winner_name), winner_rank from matches where tourney_name = "WTA Championships" intersect select winner_rank from matches where winner_rank = "L"
-select count(*), t1.winner_rank from matches as t1 join rankings as t2 on t1.winner_id = t2.winner_id
-select t1.first_name, t1.country_code, t1.birth_date from players as t1 join matches as t2 on t1.player_id = t2.winner_id order by t2.rank
-select t1.first_name, t1.country_code, t1.birth_date from players as t1 join matches as t2 on t1.player_id = t2.winner_id group by t2.winner_id order by count(*) desc limit 1
+select count(distinct winner_rank) from matches where tourney_name = 'WTA Championships' intersect select winner_rank from matches where winner_id in (select winner_id from matches where tourney_name = 'WTA Championships')
+select count(distinct winner_rank) from matches where tourney_name = 'WTA Championships'
+select t1.first_name, t1.country_code, t1.birth_date from players as t1 join rankings as t2 on t1.player_id = t2.player_id order by ranking_points desc limit 1 _EX
+select t1.first_name, t1.country_code, t1.birth_date from players as t1 join matches as t2 on t1.player_id = t2.winner_id group by t2.winner_rank order by count(*) desc limit 1
 select hand, count(*) from players group by hand _EX _EM
 select hand, count(*) from players group by hand _EX _EM
 select count(*) from ship where disposition_of_ship = 'Captured' _EX _EM
@@ -496,10 +496,10 @@ select max(t1.tonnage), min(t2.tonnage), t2.injured
 select avg(injured) from death _EX _EM
 select t2.killed, t2.injured from ship as t1 join death as t2 on t1.id = t2.caused_by_ship_id where t1.tonnage = 't' _EX _EM
 select name, result from battle where bulgarian_commander!= 'Boril' _EX _EM
-select distinct t2.id, t2.name from ship as t1 join battle as t2 on t1.id = t2.id where t1.ship_type = 'Brig' _EM
+select distinct t1.id, t1.name from battle as t1 join ship as t2 on t1.id = t2.lost_in_battle where t2.ship_type = 'Brig' _EX _EM
 select t1.id, t1.name from battle as t1 join death as t2 on t1.id = t2.killed group by t1.id having sum(t2.killed) > 10
 select t1.id, t1.name from ship as t1 join death as t2 on t1.id = t2.caused_by_ship_id group by t1.id order by sum(t2.injured) desc limit 1
-select distinct t2.name from battle as t1 join battle as t2 on t1.id = t2.b
+select distinct name from battle where bulgarian_commander = 'Kaloyan' and latin_commander = 'Baldwin I' _EX _EM
 select count(distinct result) from battle _EX _EM
 select count(*) from battle where id not in ( select lost_in_battle from ship where tonnage = 225 ); _EX _EM
 select t1.name, t1.date from battle as t1 join ship as t2 on t1.id = t2.lost_in_battle where t2.name = 'Lettice' and t2.name = 'HMS Atalanta'
@@ -509,9 +509,9 @@ select t1.line_1, t2.line_2 from addresses as t1 join addresses as t2 on t1.addr
 select t1.line_1, t1.line_2 from addresses as t1 join addresses as t2 on t1.address_id = t2.address_id _EX
 select count(*) from courses _EX _EM
 select count(*) from courses _EX _EM
-select course_description from courses where course_name = "math" _EX _EM
-select course_description from courses where course_name = "math" _EX _EM
-select t1.zip_postcode from addresses as t1 join addresses as t2 on t1.address_id = t2.address_id where t1.city = "Port Chelsea" _EX
+select course_description from courses where course_name = "mathroom" _EM
+select course_description from courses where course_name = "mathroom" _EM
+select zip_postcode from addresses where city = "Port Chelsea" _EX _EM
 select zip_postcode from addresses where city = "Port Chelsea" _EX _EM
 select t2.department_name, t1.department_id from degree_programs as t1 join departments as t2 on t1.department_id = t2.department_id group by t2.department_name order by count(*) desc limit 1 _EX
 select t2.department_name, t1.department_id from degree_programs as t1 join departments as t2 on t1.department_id = t2.department_id group by t1.department_id order by count(*) desc limit 1 _EX _EM
@@ -533,7 +533,7 @@ select department_description from departments where department_name like "%comp
 select department_description from departments where department_name like "%computer%" _EX _EM
 select t2.first_name, t2.middle_name, t2.last_name, t1.student_id from student_enrolment as t1 join students as t2 on t1.student_enrolment_id = t2.student_id group by t1.student_id having count(*) = 2 _EM
 select t2.first_name, t2.middle_name, t2.last_name, t1.student_id from student_enrolment as t1 join students as t2 on t1.student_id = t2.student_id group by t1.student_id having count(*) = 2 _EM
-student_
+select t2.first_name, t2.middle_name, t2.last_name from student_enrolment as t1 join students as t2 on t1.student_id = t2.student_id join degree_programs as t3 on t1.degree_program_id = t3.degree_program_id where t3.degree_summary_name = 'Boston' _EM
 select t2.first_name, t2.middle_name, t2.last_name from student_enrolment as t1 join students as t2 on t1.student_id = t2.student_id where t1.degree_program_id = 'Boston'
 select t1.degree_program_id from student_enrolment as t1 join student_enrolment_courses as t2 on t1.student_id = t2.student_enrolment_id group by t1.degree_program_id order by count(*) desc limit 1
 select t2.degree_summary_name from student_enrolment as t1 join degree_programs as t2 on t1.degree_program_id = t2.degree_program_id group by t2.degree_summary_name order by count(*) desc limit 1 _EX _EM
@@ -551,8 +551,8 @@ select t2.last_name from student_enrolment as t1 join students as t2 on t1.stude
 select last_name from students where ssn not in (select student_id from student_enrolment)
 select transcript_date, transcript_id from transcripts group by transcript_id having count(*) >= 2
 select transcript_date, transcript_id from transcripts group by transcript_id having count(*) >= 2
-select t2.first_name, t2.last_name from students as t1 join students as t2 on t1.ssn = t2.student_id where t1.first_name = 'Timmothy' and t1.last_name ='Ward'
-select t3.cell_mobile_number from student_enrolment as t1 join students as t2 on t1.student_id = t2.student_id join students as t3 on t1.student_id = t3.student_id where t2.first_name = "Timmothy" and t2.last_name = " Ward" _EX
+select cell_mobile_number from students where first_name = 'Timmothy' and last_name ='Ward'
+select cell_mobile_number from students where first_name = "Timmothy" and last_name = " Ward" _EX _EM
 select first_name, middle_name, last_name from students as t1 join student_enrolment as t2 on t1.student_id = t2.student_id
 select first_name, middle_name, last_name from students order by date_first_registered asc limit 1 _EX _EM
 select first_name, middle_name, last_name from students order by date_first_registered limit 1 _EX
@@ -573,7 +573,7 @@ select transcript_id, count(*) from transcripts group by transcript_id order by 
 select transcript_id, count(*) from transcripts group by transcript_id
 select transcript_date, transcript_id from transcripts group by transcript_id order by count(*) asc limit 1
 select transcript_date, transcript_id from transcripts group by transcript_id order by count(*) asc limit 1
-select t1.semester_description from semesters as t1 join student_enrolment_courses as t2 on t1.semester_id = t2.semester_id
+select t1.semester_name from semesters as t1 join student_enrolment as t2 on t1.semester_id = t2.semester_id join degree_programs as t3 on t2.degree_program_id = t3.degree_program_id where t3.degree_summary_name = 'Math' intersect select t1.semester_id
 select semester_id from student_enrolment where student_enrolment_id = 'MA' intersect select semester_id from student_enrolment where student_enrolment_id = 'MA'
 select count(distinct t1.address_id) from addresses as t1 join students as t2 on t1.address_id = t2.current_address_id
 select distinct (select distinct (distinct t1.address_id) from addresses as t1 join students as t2 on t1.address_id = t2.student_id)
@@ -581,70 +581,70 @@ select other_student_details from students order by other_student_details desc _
 select other_student_details from students order by other_student_details desc _EX _EM
 select section_name from sections
 select section_description from sections where section_name = "h" _EX _EM
-select t1.first_name from students as t1 join student_enrolment as t2 on t1.student_id = t2.student_id where permanent_address_id = "Hait Haiti" or t1.cell_mobile_number = "09700166582"
-select permanent_address_id, cell_mobile_number from students where country = "Hait Haiti" or cell_mobile_number = "09700166582"
+select t1.first_name from students as t1 join addresses as t2 on t1.student_id = t2.address_id where t2.country = "Hait Haiti" or t1.cell_mobile_number = "09700166582" _EX _EM
+select first_name from students as t1 join student_enrolment as t2 on t1.student_id = t2.student_id join addresses as t3 on
 select title from cartoon order by title _EX _EM
 select title from cartoon order by title _EX _EM
-select directed_by from cartoon where directed_by = "Ben Jones"
-tv
+select title from cartoon where directed_by = "Ben Jones" _EX _EM
+select title from cartoon where directed_by = "Ben Jones" _EX _EM
 select count(*) from cartoon where written_by = "Joseph Kuhr" _EX _EM
 select count(*) from cartoon where written_by = "Joseph Kuhr" _EX _EM
 select title, directed_by from cartoon order by directed_by
 select t2.title, t2.directed_by from cartoon as t1 join cartoon as t2 on t1.id = t2.directed_by order by "air_date"
-t
-t
+select title from cartoon where directed_by = "Ben Jones" or directed_by = "Brandon Vietti" _EX _EM
+select title from cartoon where directed_by = "Ben Jones" or directed_by = "Ben Jones" _EM
 select country, count(*) from tv_channel group by country order by count(*) desc limit 1 _EX _EM
 select country, count(*) from tv_channel group by country order by count(*) desc limit 1 _EX _EM
 select count(distinct series_name), content from tv_channel
 select count(distinct series_name), content from tv_channel
 select content from tv_channel where series_name = "Sky Radio" _EX _EM
-select content from tv_channel where series_name = "Sky Radio" _EX _EM
+select content from tv_channel where series_name = 'City Radio' _EM
 select package_option from tv_channel where series_name = "Sky Radio" _EX _EM
-select package_option from tv_channel where series_name = "Sky Radio" _EX _EM
-select count(*) from tv_channel where language = "English" _EX _EM
+select package_option from tv_channel where series_name = 'Sky Radio' _EX _EM
+select count(*) from tv_channel where language = 'English' _EX _EM
 select count(*) from tv_channel where language = "English" _EX _EM
 select language, count(*) from tv_channel group by language order by count(*) limit 1 _EX _EM
 select language, count(*) from tv_channel group by language order by count(*) limit 1 _EX _EM
 select language, count(*) from tv_channel group by language _EX _EM
 select language, count(*) from tv_channel group by language _EX _EM
-select t1.series_name from tv_channel as t1 join cartoon as t2 on t1.id = t2.id where t2.title = "The Rise of the blue betle!" _EM
-tv
-tv
-select t3.title from tv_channel as t1 join tv_series as t2 on t1.id = t2.t
+select t1.series_name from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.title = "The Rise of the blue Beetle!" _EM
+select t1.series_name from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.title = "The Rise of the blue Beetle" _EM
+select t2.title from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t1.series_name = "Sky Radio" _EX _EM
+select t3.title from tv_channel as t1 join tv_series as t2 on t1.id = t2.channel join cartoon as t3 on t2.episode = t3.id where t1.series_name = "Sky Radio"
 select episode from tv_series order by rating _EX _EM
 select episode from tv_series order by rating _EX _EM
 select episode, rating from tv_series order by rating desc limit 3 _EX _EM
 select episode, rating from tv_series order by rating desc limit 3 _EX _EM
 select min(share), max(share) from tv_series _EM
 select max(share), min(share) from tv_series _EX _EM
-tv
-tv
-tv
-tv
-select t2.channel from tv_series as t1 join
-tv
-tv
-select t1.episode from tv_series as t1 join
+select air_date from tv_series where episode = "A love of a Lifetime" _EM
+select air_date from tv_series where episode = "A love of a Lifetime" _EM
+select weekly_rank from tv_series where episode = "A love of a Lifetime" _EM
+select weekly_rank from tv_series where episode = "A love of a Lifetime" _EM
+select 'Tv_channel' from tv_series where episode = "A love of a Lifetime"
+select 'A love of a Lifetime' from tv_series where episode = "A love of a Lifetime"
+select t1.Episode from tv_series as t1 join
+select t2.episode from tv_series as t1 join
 select directed_by, count(*) from cartoon group by directed_by _EX _EM
 select directed_by, count(*) from cartoon group by directed_by _EX _EM
 select production_code, channel from cartoon where original_air_date = (select max(original_air_date) from cartoon) _EX
 select title, channel from cartoon where original_air_date = (select max(original_air_date) from cartoon)
 select package_option, series_name from tv_channel where hight_definition_tv = 'Yes' _EM
-tv
-select country from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.written_by = "Tony Casey" _EM
-select t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.directed_by where t2.written_by = "Tony Casey" _EM
+select package_option, series_name from tv_channel where hight_definition_tv = 'Yes' _EM
+select t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.written_by = "Tony Casey" _EM
+select t1.country from tv_channel as t1 join cartoon as t2 on t1.iD = t2.id where t2.written_by = "Tony Casey" _EM
 select country from tv_channel except select t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.written_by = "Tony Casey" _EM
-select country from tv_channel except select t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.directed_by where t2.written_by = "Tony Casey" _EM
-select t1.series_name, t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.directed_by where t2.directed_by = "Ben Jones" intersect select t1.series_name, t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.directed_by where t2.directed_by = "Michael Chang" _EM
-tv
-select t1.pixel_aspect_ratio_par, t1.pixel_aspect_ratio_par from tv_channel as t1 join
+select t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.directed_by where t2.written_by = "Tony Casey"
+select t1.series_name, t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.directed_by = "Ben Jones" intersect select t1.series_name, t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.directed_by = "Michael Chang" _EX _EM
+select t1.series_name, t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.directed_by = "Ben Jones" intersect select t1.series_name, t1.country from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.directed_by = "Michael Chang" _EX _EM
+select t1.pixel_aspect_ratio_par, t1.language from tv_channel as t1 join
 select pixel_aspect_ratio_par, country from tv_channel where language!= 'English' _EX _EM
 select id from tv_channel where country!= 2
 select id from tv_channel group by id having count(*) > 2
-select id from tv_channel except select t1.id from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.directed_by = "Ben Jones" _EX
+select id from tv_channel except select id from cartoon where directed_by = "Benjamin Jones"
 select id from TV_channel except select t1.id from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.directed_by = "Ben Jones" _EX
-select package_option from tv_channel except select t1.package_option from tv_channel as t1 join cartoon as t2 on t1.id = t2.channel where t2.directed_by = "Ben Jones"
-select package_option from tv_channel except select channel from cartoon where directed_by = "Ben Jones"
+select package_option from tv_channel where id not in (select id from cartoon where directed_by = "Benjamin Jones")
+select package_option from tv_channel where id not in (select id from cartoon where directed_by = "Benjamin Jones")
 select count(*) from poker_player _EX _EM
 select count(*) from poker_player _EX _EM
 select earnings from poker_player order by earnings desc _EX _EM
@@ -694,11 +694,11 @@ select contestant_name from contestants where contestant_name!= 'Jessie Alloway'
 select distinct state, created from votes _EX _EM
 select t1.contestant_number, t1.contestant_name from contestants as t1 join votes as t2 on t1.contestant_number = t2.contestant_number group by t2.contestant_number having count(*) >= 2 _EX _EM
 select t2.contestant_number, t2.contestant_name from votes as t1 join contestants as t2 on t1.contestant_number = t2.contestant_number group by t1.contestant_number order by count(*) asc limit 1 _EX _EM
-select count(*) from votes as t1 join area_code_state as t2 on t1.state = t2.state where t2.state = 'NY' or t2.state = 'CA'
+select count(*) from votes where state = 'NY' or state = 'CA' _EX _EM
 select count(*) from contestants where contestant_number not in ( select contestant_number from votes ) _EX _EM
 select t1.area_code from area_code_state as t1 join votes as t2 on t1.area_code = "null" group by t1.area_code order by count(*) desc limit 1 _EM
 select t1.created, t1.state, t1.phone_number from votes as t1 join contestants as t2 on t1.contestant_number = t2.contestant_number where t2.contestant_name = 'Tabatha Gehling' _EX _EM
-select 'Regular Code' from votes as t1 join contestants as t2 on t1.contestant_number = t2.contestant_number where t2.contestant_name = 'Tabatha Gehling' intersect select t3.area_code from votes as t1 join contestants as t2 on t1.contestant_number = t2.contestant_number join area_code_state as t3 on t1.state = t3.area_code where t2.contestant_name = 'Kelly Clauss'
+select t3.area_code from contestants as t1 join votes as t2 on t1.contestant_number = t2.contestant_number join area_code_state as t3 on t1.contestant_number = t3.area_code where t1.contestant_name = 'Tabatha Gehling' intersect select t3.area_code from contestants as t1 join votes as t2 on t1.contestant_number = t2.contestant_number join area_code_state as t3 on t2.contestant_number = t3.area_code where t1.contestant_name = 'Kelly Clauss' _EM
 select contestant_name from contestants where contestant_name like '%al%' _EX _EM
 select name from country where indepyear > 1950 _EX _EM
 select name from country where indepyear > 1950 _EX _EM
@@ -708,86 +708,86 @@ select sum(surfacearea) from country where region = 'Caribbean' _EX _EM
 select count(*) from country where surfacearea like "%carribean%" group by surfacearea
 select continent from country where name = 'Anguilla' _EX _EM
 select continent from country where name = 'Anguilla' _EX _EM
-select t1.region from country as t1 join city as t2 on t1.code = t2.countrycode where t2.name = 'Bahul' _EM
-select t1.region from country as t1 join city as t2 on t1.code = t2.countrycode where t2.name = 'Bahul' _EM
-select t1.name from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t1.name = 'Aruba' group by t1.name order by count(*) desc limit 1
-select t1.name, t1.population from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t1.name = 'Aruba'
+select district from city where name = 'Babad'
+select region from country where name = 'Babad'
+select t1.language from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.localname = 'Aruba' group by t1.language order by count(*) desc limit 1
+select t1.language from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.localname = 'Aruba'
 select population, lifeexpectancy from country where name = 'Brazil' _EX _EM
 select population, lifeexpectancy from country where name = 'Brazil' _EX _EM
-select region, population from country where name = 'Angola' _EX _EM
-select region, population from country where name = 'Angola' _EX _EM
+select region, population from country where localname = 'Angola' _EX
+select region, population from country where localname = 'Angola' _EX
 select avg(lifeexpectancy) from country where region = 'Central Africa' _EX _EM
 select avg(lifeexpectancy) from country where region = 'Central Africa' _EX _EM
-select name from country order by lifeexpectancy limit 1
-select name from country where lifeexpectancy = (select min(lifeexpectancy) from country where continent = 'Asie')
+select name from country where lifeexpectancy = 'Asie' order by lifeexpectancy limit 1
+select name from country where continent = 'Asie' order by lifeexpectancy limit 1 _EM
 select sum(population), max(gnp) from country where continent = 'Asie' _EM
-select count(*), gnp from country where continent = 'Asie' group by gnp order by count(*) desc limit 1
-select avg(lifeexpectancy) from country where continent = 'Africa'
+select gnp, count(*) from country where continent = 'Asie' group by gnp order by count(*) desc limit 1
+select avg(lifeexpectancy) from country where continent = 'Africa' and governmentform = 'Republik' _EM
 select avg(lifeexpectancy) from country where continent = 'Africa'
 select sum(surfacearea) from country where continent = 'Asie' intersect select sum(surfacearea) from country where continent = 'Europe'
-select sum(surfacearea) from country where region = 'Asie' or continent = 'Europe'
+select sum(surfacearea) from country where continent = 'Asie' or continent = 'Europe' _EM
 select count(*) from city where district = 'Gelderland'
 select sum(population) from city where district = 'Gelderland' _EX _EM
-select avg(gnp), sum(population) from country where governmentform = 'USA' _EM
+select avg(gnp), sum(population) from country where governmentform = 'US Territory' _EX _EM
 select avg(gnp), sum(population) from country where governmentform = 'US Territory' _EX _EM
 select count(distinct language) from countrylanguage _EX _EM
 select count(distinct language) from countrylanguage _EX _EM
-select count(distinct t1.governmentform) from country as t1 join country as t2 on t1.code = t2.code where t1.continent = 'Africa' _EX
+select count(distinct governmentform) from country where continent = 'Africa' _EX _EM
 select count(distinct governmentform) from country where continent = 'Africa' _EX _EM
 select count(*) from country where name = 'Aruba'
-select count(distinct name) from country where name = 'Aruba'
-select count(distinct name) from country
-select count(distinct language) from country
+select count(distinct t1.language) from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.localname = 'Aruba'
+select count(*) from countrylanguage where language = 'Afghanistan'
+select count(*) from countrylanguage where language = 'Afghanistan'
 select t1.name from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode group by t2.countrycode order by count(*) desc limit 1
 select t1.name from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode group by t2.countrycode order by count(*) desc limit 1
 select continent from country
 select t1.continent from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode group by t1.continent order by count(*) desc limit 1 _EX _EM
-select count(*) from countrylanguage where language = 'English' intersect select t1.name from country as t1 join country as t2 on t1.country
-select count(*) from countrylanguage where language = 'England' or language = 'Holstein'
-select t1.name from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t2.language = 'English' intersect select t1.name from country as t1 join country as t2 on t1.country
-select t1.name from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t2.language = 'English' intersect select t1.name from country as t1 join country as t2 on t1.country
-select t1.name from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t2.language = 'England' intersect select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'France'
-select t1.name from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t2.language = 'English' and t2.language = 'France'
-select count(distinct continent) from country
-select count(*) from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t2.language = 'Chinese'
-select language from countrylanguage where language = 'English' or language = 'Holstein'
-select t1.region from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t2.language = 'Holstein' or t2.language = 'English' _EM
+select count(*) from countrylanguage where language = 'England' intersect select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'Holstein'
+select count(*) from countrylanguage where language = 'English' or language = 'Houston'
+select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'England' intersect select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'France' _EM
+select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'England' intersect select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'France' _EM
+select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'English' intersect select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'France'
+select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'English' intersect select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'France'
+select count(distinct t1.continent) from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'Chinese' _EM
+select count(*) from countrylanguage where language = 'Chinese'
+select t1.region from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t2.language = 'English' or t2.language = 'Houston' _EM
+select t1.region from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'Holstein' or t2.language = 'Anglish' _EM
 select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'English' or t2.language = 'Houston'
 select t1.name from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'English' or t2.language = 'Houston'
-select t1.name from country as t1 join country as t2 on t1.code = t2.country
-select language from country
-select language from country
-select language from country
-select name from city where population like '%english%' group by name order by count(*) desc limit 1
-select t1.name from city as t1 join countrylanguage as t2 on t1.id = t2.countrycode where t2.language = 'English' group by t1.name order by count(*) desc limit 1
-select t1.name, t1.population, t2.lifeexpectancy from city as t1 join country as t2 on t1.countrycode = t2.code order by t2.surfacearea desc limit 1
-select t1.name, t1.population, t1.lifeexpectancy from country as t1 join city as t2 on t1.code = t2.countrycode where t1.continent = 'Asie' order by t1.lifeexpectancy desc limit 1
-select avg(lifeexpectancy) from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t2.language!= 'English'
-select avg(lifeexpectancy) from country where language
-select sum(t1.population) from city as t1 join country as t2 on t1.countrycode = t2.country
-select count(*) from country where language not in (select t1.name from country as t1 join country as t2 on t1.code = t2.language
-select 'T' from country where headofstate = 'Brix'
-select 'T' from country where headofstate = 'Brix'
+select t1.language from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.continent = 'Asie' group by t1.language order by count(*) desc limit 1 _EM
+select t1.language from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.continent = 'Asie' group by t1.countrycode order by count(*) desc limit 1
+select t1.language from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.governmentform = 'Republik' group by t1.countrycode having count(*) = 1
+select t1.language from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.governmentform = 'Republik'
+select district from city where population like '%english%' group by district order by count(*) desc limit 1
+select t1.name from city as t1 join countrylanguage as t2 on t1.id = t2.countrycode where t2.language = 'English' group by t1.id order by count(*) desc limit 1
+select name, population, lifeexpectancy from country where continent = 'Asie' order by surfacearea desc limit 1 _EM
+select name, population, lifeexpectancy from country where continent = 'Asie' order by lifeexpectancy desc limit 1
+select avg(lifeexpectancy) from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language!= 'English'
+select avg(t1.lifeexpectancy) from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language!= 'English'
+select sum(t1.population) from city as t1 join countrylanguage as t2 on t1.id = t2.countrycode where t2.language!= 'English'
+select count(*) from country where language not in (select t4.countrycode from country as t1 join countrylanguage as t2 on t1.country
+select t1.language from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.headofstate = 'Brix'
+select t2.language from country as t1 join countrylanguage as t2 on t1.code = t2.countrycode where t1.headofstate = 'Brix'
 select count(distinct t1.language) from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.indepyear < 1930
 select count(t2.language) from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t1.indepyear < 1930
-select t1.name from country as t1 join country as t2 on t1.code = t2.code where t2.surfacearea > (select max(surfacearea) from country where continent = 'Europe')
-select t1.name from country as t1 join country as t2 on t1.code = t2.code where t2.region > (select max(surfacearea) from country where continent = 'Europe')
-select t2.name from city as t1 join country as t2 on t1.countrycode = t2.code where t1.population < (select max(population) from country where continent = 'Asie')
-select t1.name from country as t1 join country as t2 on t1.code = t2.code where t2.population < (select max(population) from country where continent = 'Asie')
-select t1.name from country as t1 join country as t2 on t1.code = t2.code where t2.population > (select max(population) from country where continent = 'Asie')
-select t2.name from city as t1 join country as t2 on t1.name = t2.name where t1.population > (select max(population) from city where district = 'Asie')
-select countrycode from country
-select countrycode from country
+select name from country where surfacearea > (select max(surfacearea) from country where continent = 'Europe')
+select name from country where surfacearea > (select max(surfacearea) from country where continent = 'Europe')
+select name from country where population < (select min(population) from country where continent = 'Asie')
+select name from country where population < (select min(population) from country where continent = 'Asie')
+select name from country where population > (select max(population) from country where continent = 'Asie')
+select name from country where population > (select max(population) from country where continent = 'Asie')
+select code from country except select countrycode from countrylanguage where language = 'English'
+select code from country except select countrycode from countrylanguage where language = 'English'
 select countrycode from countrylanguage where language!= 'English' _EM
-select t2.countrycode from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language!= 'English'
-select countrycode, countrycode, t1.name from country as t1 join country as t2 on t1.country
-select countrycode from country
-select t1.name from city as t1 join countrylanguage as t2 on t1.countrycode = t2.countrycode where t2.language!= 'Europe'
+select countrycode from countrylanguage where language!= 'English' _EM
+select code from country where language!= 'England' and governmentform!= 'Republic
+select code from country where language!= 'English'
 select t1.name from city as t1 join countrylanguage as t2 on t1.countrycode = t2.countrycode where t2.language!= 'England'
-select distinct t1.name from city as t1 join countrylanguage as t2 on t1.countrycode = t2.countrycode where t2.language = 'Chinese'
-select distinct t1.name from city as t1 join countrylanguage as t2 on t1.countrycode = t2.countrycode where t2.language = 'China'
-select t1.name, t1.name, t1.surfacearea from country as t1 join city as t2 on t1.code = t2.countrycode order by t2.population limit 1
-select t1.name, t1.name, t1.surfacearea from country as t1 join city as t2 on t1.code = t2.countrycode order by t2.population limit 1
+select t1.name from city as t1 join countrylanguage as t2 on t1.countrycode = t2.countrycode where t2.language!= 'England'
+select distinct t1.name from city as t1 join countrylanguage as t2 on t1.id = t2.countrycode where t2.language = 'Asia' and t2.language = 'Chinese' _EX
+select distinct t1.name from city as t1 join countrylanguage as t2 on t1.countrycode = t2.countrycode where t2.language = 'Asia' intersect select distinct t1.name from city as t1 join countrylanguage as t2 on t1.id = t2.countrycode where t2.language = 'Chinese'
+select name, indepyear, surfacearea from country order by population limit 1 _EX _EM
+select name, indepyear, surfacearea from country order by population limit 1 _EX _EM
 select population, name, headofstate from country order by surfacearea desc limit 1 _EX _EM
 select name, population, headofstate from country order by surfacearea desc limit 1 _EX _EM
 select t2.name, count(*) from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code group by t1.countrycode having count(*) >= 3
@@ -808,7 +808,7 @@ select count(*) from country where continent = 'Asie' _EM
 select count(*) from country where continent = 'Asie' _EM
 select name from country where continent = 'Europe' and population = 80000 _EX _EM
 select name from country where continent = 'Europe' and population > 80000
-select sum(population), avg(surfacearea) from country where region = 'North America' and indepyear > 3000 _EX
+select sum(population), avg(surfacearea) from country where continent = 'North America' and population > 3000
 select sum(surfacearea), avg(surfacearea) from country where region = 'North America' and surfacearea > 3000
 select name from city where population between 160000 and 900000 _EX _EM
 select name from city where population between 160000 and 900000 _EX _EM
@@ -817,9 +817,9 @@ select t1.language from countrylanguage as t1 join country as t2 on t1.countryco
 select language, count(*) from country
 select countrycode, count(*) from countrylanguage group by countrycode order by count(*) desc limit 1
 select count(*) from countrylanguage where language = 'Spanish' group by percentage order by count(*) desc limit 1
-select count(*) from countrylanguage where language = 'Spanish' group by language order by count(*) desc limit 1
-select countrycode from countrylanguage where language = 'Spain' group by countrycode order by count(*) desc limit 1
-select countrycode from countrylanguage where language = 'Spanish' group by countrycode order by count(*) desc limit 1
+select count(*) from countrylanguage where language = 'Spanish' group by countrycode order by count(*) desc limit 1
+select t2.code from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t1.language = 'Spanish' group by t2.code order by count(*) desc limit 1
+select t1.code from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t2.language = 'Spanish' group by t1.code order by count(*) desc limit 1
 select count(*) from conductor _EX _EM
 select count(*) from conductor _EX _EM
 select name from conductor order by age asc _EX _EM
@@ -830,8 +830,8 @@ select record_company from orchestra order by year_of_founded desc _EX _EM
 select record_company from orchestra order by year_of_founded desc _EX _EM
 select avg(attendance) from show _EX _EM
 select avg(attendance) from show _EX _EM
-
-
+select max(share), min(share) from performance where type!= "Live final" _EX _EM
+select max(share), min(share) from performance where type!= "Live final" _EX _EM
 select count(distinct nationality) from conductor _EX _EM
 select count(distinct nationality) from conductor _EX _EM
 select name from conductor order by year_of_work desc _EX _EM
@@ -857,7 +857,7 @@ select orchestra from orchestra where orchestra_id not in (select orchestra_id f
 select record_company from orchestra where year_of_founded < 2003 intersect select record_company from orchestra where year_of_founded > 2003 _EX _EM
 select record_company from orchestra where year_of_founded < 2003 intersect select record_company from orchestra where year_of_founded > 2003 _EX _EM
 select count(*) from orchestra where major_record_format = "CD" or major_record_format = "DVD" _EX _EM
-select count(*) from orchestra where major_record_format = "CD" or major_record_format = "DVD" _EX _EM
+select count(*) from orchestra where major_record_format = 'CD' or major_record_format = 'DVD' _EX _EM
 select year_of_founded from orchestra group by year_of_founded having count(*) > 1
 select year_of_founded from orchestra where orchestra_id in(select orchestra_id from performance) group by orchestra_id having count(*) > 1 _EX
 select count(*) from highschooler _EX _EM
@@ -871,7 +871,7 @@ select grade from highschooler where name = "Knowy" _EM
 select name from highschooler where grade = 10 _EX _EM
 select name from highschooler where grade = 10 _EX _EM
 select id from highschooler where name = "Knowy" _EM
-select id from highschooler where name = "Knowy" _EM
+select id from highschooler where name = 'Knowy' _EM
 select count(*) from highschooler where grade = 9 or grade = 10 _EX _EM
 select count(*) from highschooler where grade = 9 or grade = 10 _EX _EM
 select grade, count(*) from highschooler group by grade _EX _EM
@@ -889,7 +889,7 @@ select t1.name from highschooler as t1 join friend as t2 on t1.id = t2.friend_id
 select t1.name from highschooler as t1 join friend as t2 on t1.id = t2.friend_id group by t2.friend_id having count(*) >= 3 _EM
 select t1.name from highschooler as t1 join friend as t2 on t1.id = t2.friend_id group by t2.friend_id having count(*) >= 3 _EM
 select distinct name from highschooler as t1 join friend as t2 on t1.id = t2.friend_id where t1.name = "Knowy"
-select t3.name from highschooler as t1 join friend as t2 on t1.id = t2.friend_id join highschooler as t3 on t2.student_id = t3.id where t1.name = "Knowy" _EM
+select t2.friend_id from highschooler as t1 join friend as t2 on t1.id = t2.friend_id where t1.name = "Knowy"
 select count(t2.friend_id) from highschooler as t1 join friend as t2 on t1.id = t2.friend_id where t1.name = "Knowy"
 select count(t2.friend_id) from highschooler as t1 join friend as t2 on t1.id = t2.friend_id where t1.name = "Knowy"
 select student_id from
@@ -921,7 +921,7 @@ select state from professionals intersect select state from owners
 select avg(t1.age) from dogs as t1 join treatments as t2 on t1.dog_id = t2.dog_id
 select avg(t1.age) from dogs as t1 join treatments as t2 on t1.dog_id = t2.dog_id
 select t1.professional_id, t1.last_name, t1.cell_number from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id group by t1.professional_id having count(*) > 2
-select t1.professional_id, t1.last_name, t1.cell_number from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id where t1.state = "Indiana" group by t1.professional_id having count(*) > 2 union select t1.professional_id, t1.last_name, t1.cell_number from professionals as t1 join treatments as t2 on t1.professional_id = t2.dog_id group by t2.professional_id having count(*) > 2
+select t1.professional_id, t1.last_name, t1.cell_number from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id where t1.state = "Indiana" or t2.date_of_treatment > 2
 select name from dogs except select t1.name from dogs as t1 join treatments as t2 on t1.dog_id = t2.dog_id join treatments as t3 on t2.treatment_id = t3.treatment_id where t3.cost_of_treatment > 1000
 select t1.name from dogs as t1 join treatments as t2 on t1.dog_id = t2.dog_id where t2.cost_of_treatment > 1000
 select first_name from professionals union select first_name from owners except select t1.first_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id
@@ -954,14 +954,14 @@ select t1.first_name, t2.name from owners as t1 join dogs as t2 on t1.owner_id =
 select t1.first_name, t2.name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id _EX _EM
 select t2.name, t1.date_of_treatment from treatments as t1 join dogs as t2 on t1.dog_id = t2.dog_id group by t1.dog_id order by count(*) desc limit 1
 select t2.name, t1.date_of_treatment from treatments as t1 join dogs as t2 on t1.dog_id = t2.dog_id group by t1.dog_id order by count(*) asc limit 1
-select t1.first_name, t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id where t1.state = 'Virgina'
-select t1.first_name, t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id where t1.state = "Virgina"
+select first_name, last_name from owners where state = 'Virgina'
+select t1.first_name, t2.name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id where t1.state = "Virgina" _EM
 select date_arrived, date_departed from dogs as t1 join treatments as t2 on t1.dog_id = t2.dog_id _EM
 select date_arrived, date_departed from dogs
 select t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id order by t2.date_adopted limit 1
 select t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id order by t2.date_adopted limit 1
 select email_address from professionals where state = "Hawaii" or state = "Wisconsin" _EX _EM
-select t3.email_address from owners as t1 join treatments as t2 on t1.owner_id = t2.dog_id join professionals as t3 on t2.professional_id = t3.professional_id where t1.state = "Ohio" or t1.state = "Wisconsin"
+select email_address from professionals where state = "Hawaii" or state = "Wisconsin" _EX _EM
 select date_arrived, date_departed from dogs _EX _EM
 select date_arrived, date_arrived from dogs
 select count(*) from dogs where dog_id not in ( select dog_id from treatments )
@@ -1029,6 +1029,6 @@ select name from singer where singer_id not in (select singer_id from song) _EX 
 select citizenship from singer where birth_year < 1945 intersect select citizenship from singer where birth_year > 1955 _EX _EM
 select citizenship from singer where birth_year < 1945 intersect select citizenship from singer where birth_year > 1955 _EX _EM
 select count(*) from other_available_features _EX _EM
-select t3.feature_type_name from other_available_features as t1 join ref_feature_types as t2 on t1.feature_type_code = t2.feature_type_code join ref_feature_types as t3 on t1.feature_type_code = t3.feature_type_code where t1.feature_name = "AirCon" _EX
+select t1.feature_type_name from ref_feature_types as t1 join other_available_features as t2 on t1.feature_type_code = t2.feature_type_code where t2.feature_name = "AirCon" _EX _EM
 select t1.property_type_description from ref_property_types as t1 join properties as t2 on t1.property_type_code = t2.property_type_code
-select t1.property_name from properties as t1 join properties as t2 on t1.property_type_code = t2.property_type_code where t2.property_type_code = "Haus" or t2.room_count > 1
+select property_name from properties where property_type_code = "Haus" or room_count > 1

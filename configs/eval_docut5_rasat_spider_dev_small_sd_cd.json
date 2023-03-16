@@ -3,7 +3,7 @@
     "model_name_or_path": "totem37/DocuT5-RASAT-Small-SD",
     "dataset": "spider",
     "source_prefix": "",
-    "schema_serialization_type": "peteshaw",
+    "schema_serialization_type": "custom",
     "schema_serialization_randomized": false,
     "schema_serialization_with_db_id": true,
     "schema_serialization_with_db_content": true,
