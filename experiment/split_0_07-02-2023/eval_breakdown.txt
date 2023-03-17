@@ -1,0 +1,194 @@
+0 medium pred: select birth_year, citizenship from singer
+0 medium gold: SELECT Birth_Year ,  Citizenship FROM singer
+
+1 medium pred: select birth_year, citizenship from singer
+1 medium gold: SELECT Birth_Year ,  Citizenship FROM singer
+
+2 medium pred: select name from singer where birth_year = 1948 or birth_year = 1949
+2 medium gold: SELECT Name FROM singer WHERE Birth_Year  =  1948 OR Birth_Year  =  1949
+
+3 medium pred: select name from singer where birth_year = 1948 or birth_year = 1949
+3 medium gold: SELECT Name FROM singer WHERE Birth_Year  =  1948 OR Birth_Year  =  1949
+
+4 hard pred: select citizenship from singer where birth_year < 1945 intersect select citizenship from singer where birth_year > 1955
+4 hard gold: SELECT Citizenship FROM singer WHERE Birth_Year  <  1945 INTERSECT SELECT Citizenship FROM singer WHERE Birth_Year  >  1955
+
+5 hard pred: select citizenship from singer where birth_year < 1945 intersect select citizenship from singer where birth_year > 1955
+5 hard gold: SELECT Citizenship FROM singer WHERE Birth_Year  <  1945 INTERSECT SELECT Citizenship FROM singer WHERE Birth_Year  >  1955
+
+6 medium pred: select count(*) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t3.age > 20 or t3.age > 30
+6 medium gold: SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20
+
+7 medium pred: select t3.pettype, t2.weight from has_pet as t1 join pets as t2 on t1.petid = t2.petid
+7 medium gold: SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1
+
+8 medium pred: select t2.pettype, t2.weight from has_pet as t1 join pets as t2 on t1.petid = t2.petid order by t2.petid asc limit 1
+8 medium gold: SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1
+
+9 medium pred: select t2.petid, t2.weight from pets as t1 join pets as t2 on t1.petid + t2.pet_age > 1
+9 medium gold: SELECT petid ,  weight FROM pets WHERE pet_age  >  1
+
+10 medium pred: select t2.petid, t2.weight from has_pet as t1 join pets as t2 on t1.petid = t2.petid where
+10 medium gold: SELECT petid ,  weight FROM pets WHERE pet_age  >  1
+
+11 medium pred: select t2.weight from has_pet as t1 join pets as t2 on t1.petid = t2.petid
+11 medium gold: SELECT weight FROM pets ORDER BY pet_age LIMIT 1
+
+12 medium pred: select min(weight) from pets where pettype = 'dog'
+12 medium gold: SELECT weight FROM pets ORDER BY pet_age LIMIT 1
+
+13 hard pred: select t2.birth_date from poker_player as t1 join people as t2 on t1.people_id = t2.people_id where t1.money_rank = (select min(money_rank) from poker_player)
+13 hard gold: SELECT T1.Birth_Date FROM people AS T1 JOIN poker_player AS T2 ON T1.People_ID  =  T2.People_ID ORDER BY T2.Earnings ASC LIMIT 1
+
+14 hard pred: select t2.birth_date from poker_player as t1 join people as t2 on t1.people_id = t2.people_id order by t1.money_rank asc limit 1
+14 hard gold: SELECT T1.Birth_Date FROM people AS T1 JOIN poker_player AS T2 ON T1.People_ID  =  T2.People_ID ORDER BY T2.Earnings ASC LIMIT 1
+
+15 medium pred: select name, birth_date from people order by birth_date asc
+15 medium gold: SELECT Name ,  Birth_Date FROM people ORDER BY Name ASC
+
+16 medium pred: select name, birth_date from people order by birth_date
+16 medium gold: SELECT Name ,  Birth_Date FROM people ORDER BY Name ASC
+
+17 medium pred: select hometown from teacher order by age asc limit 1
+17 medium gold: SELECT Hometown FROM teacher ORDER BY Age ASC LIMIT 1
+
+18 medium pred: select hometown from teacher order by age asc limit 1
+18 medium gold: SELECT Hometown FROM teacher ORDER BY Age ASC LIMIT 1
+
+19 easy pred: select avg(t1.num_of_staff) from museum as t1 join museum as t2 on t1.museum_id = t2.museum_id where t2.open_year < 2009
+19 easy gold: SELECT avg(num_of_staff) FROM museum WHERE open_year  <  2009
+
+20 hard pred: select name from museum where num_of_staff > (select min(num_of_staff) from museum where open_year > 2010)
+20 hard gold: SELECT name FROM museum WHERE num_of_staff  >  (SELECT min(num_of_staff) FROM museum WHERE open_year  >  2010)
+
+21 extra pred: select t3.name from visit as t1 join museum as t2 on t1.museum_id = t2.museum_id join visitor as t3 on t1.visitor_id = t3.id where t2.open_year < 2009 intersect select t3.name from visit as t1 join museum as t2 on t1.museum_id = t2.museum_id join visitor as t3 on
+21 extra gold: SELECT t1.name FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id JOIN museum AS t3 ON t3.Museum_ID  =  t2.Museum_ID WHERE t3.open_year  <  2009 INTERSECT SELECT t1.name FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id JOIN museum AS t3 ON t3.Museum_ID  =  t2.Museum_ID WHERE t3.open_year  >  2011
+
+22 extra pred: select count(*) from visitor where visitor_id not in ( select visitor_id from visit as t1 join museum as t2 on t1.museum_id = t2.museum_id where t2.open_year > 2010
+22 extra gold: SELECT count(*) FROM visitor WHERE id NOT IN (SELECT t2.visitor_id FROM museum AS t1 JOIN visit AS t2 ON t1.Museum_ID  =  t2.Museum_ID WHERE t1.open_year  >  2010)
+
+23 medium pred: select count(*) from museum where open_year > 2013 or open_year <= 2008
+23 medium gold: SELECT count(*) FROM museum WHERE open_year  >  2013 OR open_year  <  2008
+
+24 medium pred: select open_year, num_of_staff from museum where name = 'Palacia Museum'
+24 medium gold: SELECT Num_of_Staff ,  Open_Year FROM museum WHERE name  =  'Plaza Museum'
+
+25 easy pred: select created from votes where state = 'CA'
+25 easy gold: SELECT max(created) FROM votes WHERE state  =  'CA'
+
+26 medium pred: select name, date, result from battle
+26 medium gold: SELECT name ,  date FROM battle
+
+27 extra pred: select t1.name, t1.date from battle as t1 join battle as t2 on t1.id = t2.
+27 extra gold: SELECT T1.name ,  T1.date FROM battle AS T1 JOIN ship AS T2 ON T1.id  =  T2.lost_in_battle WHERE T2.name  =  'Lettice' INTERSECT SELECT T1.name ,  T1.date FROM battle AS T1 JOIN ship AS T2 ON T1.id  =  T2.lost_in_battle WHERE T2.name  =  'HMS Atalanta'
+
+28 easy pred: select t1.name from country as t1 join country as t2 on
+28 easy gold: SELECT Name FROM country WHERE IndepYear  >  1950
+
+29 medium pred: select count(distinct t2.language) from country as t1 join countrylanguage as t2 on t1.country
+29 medium gold: SELECT count(DISTINCT T2.Language) FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE  IndepYear  <  1930 AND T2.IsOfficial  =  "T"
+
+30 medium pred: select count(*) from country where isofficial = 'T' and
+30 medium gold: SELECT count(DISTINCT T2.Language) FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE  IndepYear  <  1930 AND T2.IsOfficial  =  "T"
+
+31 medium pred: select name, country, age from singer order by age desc
+31 medium gold: SELECT name ,  country ,  age FROM singer ORDER BY age DESC
+
+32 medium pred: select t3.name, t2.song_release_year from singer_in_concert as t1 join singer as t2 on t1.song_
+32 medium gold: SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1
+
+33 medium pred: select name, song_release_year from singer order by age asc limit 1
+33 medium gold: SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1
+
+34 hard pred: select name from singer where age > (select avg(age) from singer)
+34 hard gold: SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)
+
+35 medium pred: select count(*) from concert where year = 2014 or year = 2015
+35 medium gold: SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015
+
+36 extra pred: select t2.name, t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id = t2.stadium_id where t1.year >= 2014 group by t2.stadium_id order by count(*) desc limit 1
+36 extra gold: SELECT T2.name ,  T2.capacity FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  >=  2014 GROUP BY T2.stadium_id ORDER BY count(*) DESC LIMIT 1
+
+37 extra pred: select t2.name, t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id = t2.stadium_id where t1.year > 2013 group by t2.stadium_id order by count(*) desc limit 1
+37 extra gold: select t2.name ,  t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id  =  t2.stadium_id where t1.year  >  2013 group by t2.stadium_id order by count(*) desc limit 1
+
+38 hard pred: select year from concert group by year order by count(*) desc limit 1
+38 hard gold: SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1
+
+39 hard pred: select year from concert group by year order by count(*) desc limit 1
+39 hard gold: SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1
+
+40 hard pred: select name from stadium except select t1.name from stadium as t1 join concert as t2 on t1.stadium_id = t2.stadium_id where t2.year = 2014
+40 hard gold: SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014
+
+41 hard pred: select t3.name from singer_in_concert as t1 join concert as t2 on t1.song_
+41 hard gold: SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014
+
+42 easy pred: select name from country where indepyear > 1950
+42 easy gold: SELECT Name FROM country WHERE IndepYear  >  1950
+
+43 medium pred: select name, indepyear, surfacearea from country order by population asc limit 1
+43 medium gold: SELECT Name ,  SurfaceArea ,  IndepYear FROM country ORDER BY Population LIMIT 1
+
+44 medium pred: select t1.name, t1.indepyear, t1.surfacearea from country as t1 join country as t2 on t1.countrycode
+44 medium gold: SELECT Name ,  SurfaceArea ,  IndepYear FROM country ORDER BY Population LIMIT 1
+
+45 medium pred: select t1.title, t2.directed_by from cartoon as t1 join t
+45 medium gold: SELECT title ,  Directed_by FROM Cartoon ORDER BY Original_air_date
+
+46 medium pred: select t2.title, t2.directed_by from tv_series as t1 join cartoon as t2 on t1.id = t2.
+46 medium gold: SELECT title ,  Directed_by FROM Cartoon ORDER BY Original_air_date
+
+47 medium pred: select t1.channel, t2.title from cartoon as t1 join tv_channel as
+47 medium gold: select production_code ,  channel from cartoon order by original_air_date desc limit 1
+
+48 easy pred: select air_date from tv_series where episode = 'A love of a Lifetime'
+48 easy gold: SELECT Air_Date FROM TV_series WHERE Episode = "A Love of a Lifetime";
+
+49 medium pred: select t3.name from orchestra as t1 join show as t2 on t1.orchestr
+49 medium gold: SELECT T1.Name FROM conductor AS T1 JOIN orchestra AS T2 ON T1.Conductor_ID  =  T2.Conductor_ID WHERE Year_of_Founded  >  2008
+
+50 medium pred: select t3.name from orchestra as t1 join conductor as t2 on t1.orchestr
+50 medium gold: SELECT T1.Name FROM conductor AS T1 JOIN orchestra AS T2 ON T1.Conductor_ID  =  T2.Conductor_ID WHERE Year_of_Founded  >  2008
+
+                     easy                 medium               hard                 extra                all                 
+count                5                    31                   10                   5                    51                  
+=====================   EXECUTION ACCURACY     =====================
+execution            0.600                0.355                0.600                0.400                0.431               
+
+====================== EXACT MATCHING ACCURACY =====================
+exact match          0.400                0.323                0.600                0.400                0.392               
+
+---------------------PARTIAL MATCHING ACCURACY----------------------
+select               0.800                0.857                0.889                1.000                0.868               
+select(no AGG)       1.000                0.905                0.889                1.000                0.921               
+where                1.000                0.571                0.800                1.000                0.789               
+where(no OP)         1.000                0.714                0.800                1.000                0.842               
+group(no Having)     0.000                0.000                1.000                1.000                1.000               
+group                0.000                0.000                1.000                1.000                1.000               
+order                0.000                0.625                0.667                1.000                0.692               
+and/or               1.000                0.933                1.000                1.000                0.960               
+IUEN                 0.000                0.000                1.000                0.000                0.750               
+keywords             1.000                0.867                0.889                1.000                0.903               
+---------------------- PARTIAL MATCHING RECALL ----------------------
+select               0.800                0.581                0.800                0.600                0.647               
+select(no AGG)       1.000                0.613                0.800                0.600                0.686               
+where                0.800                0.333                0.800                0.600                0.556               
+where(no OP)         0.800                0.417                0.800                0.600                0.593               
+group(no Having)     0.000                0.000                1.000                1.000                1.000               
+group                0.000                0.000                1.000                1.000                1.000               
+order                0.000                0.312                0.500                1.000                0.409               
+and/or               1.000                0.966                1.000                1.000                0.980               
+IUEN                 0.000                0.000                1.000                0.000                0.600               
+keywords             0.800                0.464                0.800                0.600                0.583               
+---------------------- PARTIAL MATCHING F1 --------------------------
+select               0.800                0.692                0.842                0.750                0.742               
+select(no AGG)       1.000                0.731                0.842                0.750                0.787               
+where                0.889                0.421                0.800                0.750                0.652               
+where(no OP)         0.889                0.526                0.800                0.750                0.696               
+group(no Having)     1.000                1.000                1.000                1.000                1.000               
+group                1.000                1.000                1.000                1.000                1.000               
+order                1.000                0.417                0.571                1.000                0.514               
+and/or               1.000                0.949                1.000                1.000                0.970               
+IUEN                 1.000                1.000                1.000                1.000                0.667               
+keywords             0.889                0.605                0.842                0.750                0.709               
