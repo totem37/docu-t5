@@ -45,8 +45,8 @@ select count(*) from stadium order by capacity desc limit 1
 select count(*) from stadium order by capacity desc limit 1
 select count(*) from pets where weight > 10
 select count(*) from pets where weight > 10
-select weight from pets order by birthdate desc limit 1
-select weight from student
+select t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog' and t3.age = (select min(age) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog')
+select t2.weight from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t2.pettype = 'dog' order by t3.age limit 1
 select max(weight), pettype from pets group by pettype
 select max(weight), max(weight), pettype from pets group by pettype
 select count(*) from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.age > 20
@@ -63,7 +63,7 @@ select major, age from student where stuid not in (select stuid from has_pet)
 select major, count(*) from student where stuid not in (select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'dog')
 select stuid from student except select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'dog'
 select stuid from student except select stuid from has_pet as t1 join pets as t2 on t1.stuid = t2.petid where t2.pettype = 'dog'
-select fname, age from student where stuid not in (select stuid from has_pet)
+select fname, age from student where stuid not in (select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid where t2.pettype = 'dog')
 select fname from student where stuid in (select stuid from has_pet)
 select pettype, weight from pets order by birthdate desc limit 1
 select pettype, count(*) from pets group by pettype order by count(*) asc limit 1
@@ -75,13 +75,13 @@ select pettype, avg(t1.petid), max(t1.petid) from pets as t1 join has_pet as t2 
 select pettype, avg(weight) from pets group by pettype
 select distinct t1.fname, t1.age from student as t1 join has_pet as t2 on t1.stuid = t2.stuid
 select distinct t1.fname, t1.age from student as t1 join has_pet as t2 on t1.stuid = t2.stuid
-select petid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join has_pet as t3 on t1.petid = t3.petid join student as t4 on t3.stuid = t1.stuid
-select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid =
+select stuid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join has_pet as t3 on t1.petid = t3.petid join student as t4 on t3.stuid = t1.stuid
+select t2.petid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.lname = 'Smith'
 select count(*), stuid from has_pet group by stuid
 select t1.stuid, count(*) from has_pet as t1 join pets as t2 on t1.petid = t2.petid group by t1.stuid
 select fname, sex from student group by sex having count(*) > 1
 select fname, sex from student group by sex having count(*) > 1
-select t1.lname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.birthdate = 2001
+select t1.lname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.pettype = 'cat' and t2.birthdate
 select t1.lname from student as t1 join has_pet as t2 on t1.stuid = t2.stuid join pets as t3 on t2.petid = t3.petid where t3.birthdate = 2001
 select avg(age) from student where stuid not in (select stuid from has_pet)
 select avg(age) from student where stuid not in (select stuid from has_pet)
@@ -109,11 +109,11 @@ select countryname from countries group by countryname order by count(*) desc li
 select countryname from countries group by countryname order by count(*) desc limit 1
 select count(*), t1.maker from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.maker
 select count(*), t1.id, t1.fullname from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id
-select t2.accelerate from car_names as t1 join cars_data as t2 on t1.model = t2.id where t1.make = "amc hornet"
-select sum(t1.accelerate) from cars_data as t1 join countries as t2 on t1.country
+select t2.accelerate from car_names as t1 join cars_data as t2 on t1.makeid = t2.id where t1.make = "ac" and t1.make = "ac"
+select t1.acc
 select count(*) from car_makers where country = "Japanese"
 select count(*) from car_makers where country = "Japanese"
-select count(distinct model) from continents
+select count(distinct t1.model) from model_list as t1 join countries as t2 on t2.countryid = t2.countryid where t2.continent = 'america'
 select count(*) from model_list where countryid in (select t1.countryid from countries as t1 join car_makers as t2 on t1.countryid = t2.countryid
 select avg(
 select avg(t2.mpg) from cars_data as t1 join cars_data as t2 on t1.id = t2.contin
@@ -127,8 +127,8 @@ select count(*) from cars_data where horsepower > 150
 select count(*) from cars_data where horsepower > 150
 select avg(weight), year from cars_data group by year
 select avg(weight), year from cars_data group by year
-select continent from continents group by continent having count(*) >= 3
-select countryname from countries where continent = "europe" group by countryid having count(*) >= 3
+select countryname from countries where continent = "europe" group by countryname having count(*) >= 3
+select countryname from countries where continent = "europe" group by countryname having count(*) >= 3
 select max (select max (select max (select max (select t2.makeid from car_names as t1 join car_names as t2 on t1.model = t2.modelid
 select t1.make, max(t1.
 select model from model_list where model not in (select model from car_names)
@@ -145,12 +145,12 @@ select count(*) from cars_data where cylinders > 4
 select count(*) from cars_data where cylinders > 4
 select count(*) from cars_data order by year desc limit 2
 select count(*) from car_names where make = 2
-select count(*) from car_makers as t1 join countries as t2 on t1.country = t2.countryid where t1.maker = 'American Motor'
-select count(*) from car_names as t1 join continents as t2 on t1.country
+select count(distinct model) from car_makers as t1 join continents as t2 on t1.country = t2.country
+select count(*), continent from car_makers as t1 join countries as t2 on t1.country = t2.countryid where t1.maker = 'American Motor'
 select t1.maker, t1.fullname, t1.id from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.maker having count(*) > 3
 select t1.maker, t1.id from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id having count(*) > 3
-select distinct t1.model from model_list as t1 join countries as t2 on t1.country
-select distinct id from car_makers as t1 join countries as t2 on t1.country = t2.countryid where t1.maker = "General Motors" union select distinct t1.model from car_names as t1 join cars_data as t2 on t1.model = t2.id where t1.make = "3500"
+select distinct t2.model from car_makers as t1 join model_list as t2 on t1.id = t2.modelid where t1.fullname = 'General Motors' union select distinct t2.model from car_makers as t1 join model_list as t2 on t1.id = t2.modelid where t1.fullname = 'General Motors'
+select distinct model from model_list where id = (select t1.model from model_list as t1 join car_makers as t2 on t1.modelid = t2.id where t2.maker = 'General Motors') or t2.year >
 select year from cars_data group by year having count(*) < 3000 intersect select year from cars_data group by year having count(*) <= 4000
 select distinct year from cars_data where weight < 4000 intersect select distinct year from cars_data where weight > 3000
 select horsepower from cars_data order by accelerate desc limit 1
@@ -169,8 +169,8 @@ select t1.makeid, t1.make from car_names as t1 join cars_data as t2 on t1.makeid
 select make, t1.make from car_names as t1 join cars_data as t2 on t1.makeid = t2.id where id not in (select t4.id from cars_data as t3 join cars_data as t4 on t3.id = 4)
 select max(t2.mpg) from cars_data as t1 join cars_data as t2 on t1.id = t2.
 select max(mpg) from cars_data where cylinders = 8 union select mpg from cars_data where cylinders < 1980
-select model from model_list where model = 'Ford Motor' except select model from model_list where model = '3500'
-select distinct model from model_list where model > 3500 except select distinct model from car_makers as t1 join countries as t2 on t1.country = t2.countryid
+select model from model_list where model < 3500 except select model from model_list where model = 'Ford Motor'
+select distinct model from model_list where model = "3500" except select distinct model from model_list where maker = "Ford"
 select countryname from countries except select t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country
 select countryname from countries except select t1.countryname from countries as t1 join car_makers as t2 on t1.countryid = t2.country
 select t1.id, t1.maker from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id having count(*) >= 2 intersect select t1.maker, t1.maker from car_makers as t1 join model_list as t2 on t1.id = t2.modelid group by t1.id having count(*) > 3
@@ -181,8 +181,8 @@ select country from airlines where abbreviation = "JetBlue"
 select country from airlines where abbreviation = 'Jazzblue'
 select abbreviation from airlines where abbreviation = "JetBlue"
 select abbreviation from airlines where abbreviation = "JetBlue"
+select airline, abbreviation from airlines where airline = 'American Airlines'
 select airline, abbreviation from airlines where abbreviation = 'American'
-select uid, abbreviation from airlines where abbreviation = 'American'
 select airportcode, airportname from airports where airportname = "James"
 select airportcode, airportname from airports where airportname = "Syracon"
 select count(*) from airlines
@@ -201,24 +201,24 @@ select airportname from airports where airportcode = 'AKO'
 select airportname from airports where airportcode = 'AKO'
 select airportname from airports where airportcode = 'Jackson'
 select airportname from airports where city = "James"
-select count(*) from flights where flightno = 'APG'
-select count(*) from flights where flightno = 'APG'
+select count(*) from flights where sourceairport = 'APG'
+select count(*) from flights where sourceairport = 'APG'
 select count(*) from airports where airportcode = "ATO"
 select count(*) from airports where airportcode = "ATO"
 select count(*) from flights where destairport = "James"
 select count(*) from flights where flightno = "James"
 select count(*) from flights as t1 join airports as t2 on t2.city = t2.city where destairport = "Michael"
 select count(*) from flights where flightno = "James"
-select count(*) from airports as t1 join flights as t2 on t1.city = t2.airport
-select count(*) from airports as t1 join flights as t2 on t1.city = t2.airport
+select count(*), t1.destairport from flights as t1 join airports as t2 on t2.airportcode = t2.airportcode where t2.city = 'Syracuse' and t2.city = 'Ashley'
+select count(*) from flights where city = "Sylvania" and countryabbrev = "Ashel
 select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.uid
-select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.airport
-select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.airport
-select count(*) from airlines as t1 join flights as t2 on t1.uid = t2.airport
-select count(*) from flights as t1 join airports as t2 on t2.city = t2.city where t2.airportcode = 'AHD'
-select count(*) from flights where flightno = "AHD"
-select count(*) from airports as t1 join flights as t2 on t1.city = t2.airport
-select count(*) from flights as t1 join airports as t2 on t2.city = t2.city where t2.country = 'Aberdeen'
+select count(*) from airlines where abbreviation = "JetBlue"
+select count(*) from flights as t1 join airports as t2 on t2.airportcode = t2.airportcode where t2.airportcode = 'ASY'
+select count(*) from flights as t1 join airports as t2 on t1.airport
+select count(*) from flights as t1 join airports as t2 on t1.airport
+select count(*) from flights where sourceairport = "AHD"
+select count(*) from flights as t1 join airports as t2 on t2.airportcode = t2.airportcode where t2.city = 'Aberdeen'
+select count(*) from flights as t1 join airports as t2 on t2.airportcode = t2.airportcode where t2.city = "Aberdeen"
 select city from airports group by city order by count(*) desc limit 1
 select city from airports group by city order by count(*) desc limit 1
 select city from airports group by city order by count(*) desc limit 1
@@ -233,22 +233,22 @@ select abbreviation, country from airlines group by abbreviation order by count(
 select t1.abbreviation, t1.country from airlines as t1 join flights as t2 on t1.uid = t2.airport
 select airline from flights where flightno = 'AHD'
 select airline from flights where sourceairport = "AHD"
-select distinct airline from flights where flightno = 'AHD'
+select t1.airline from airlines as t1 join airports as t2 on t1.uid = t2.airportname where t2.airportcode = 'AHD'
 select airline from flights where sourceairport = "AHD"
-select airline from flights where flightno = 'APG' intersect select airline from flights where flightno = 'CVO'
-select airline from flights where flightno = 'APG' intersect select airline from flights where flightno = 'CVO'
-select airline from flights where flightno = 'CVO' except select airline from flights where flightno = 'APG'
-select airline from airlines where flightno in (select t1.Airline from airlines as t1 join airports as t2 on t1.uid = t2.airportcode where t2.airportcode = 'CVO' except select airline from airlines as t3 join flights as t4 on t3.uid = t4.uid
+select t1.airline from airlines as t1 join flights as t2 on t1.uid = t2.uid
+select airline from flights where sourceairport = "APG" intersect select airline from flights where destairport = "CVO"
+select t1.airline from airlines as t1 join flights as t2 on t1.uid = t2.uid
+select t1.airline from airlines as t1 join flights as t2 on t1.uid = t2.uid
 select airline from airlines group by airline having count(*) >= 10
 select airline from airlines group by airline having count(*) >= 10
 select airline from airlines group by airline having count(*) < 200
 select airline from airlines where uid < 200
-select flightno from airlines as t1 join flights as t2 on t1.uid = t2.airport
-select flightno from airlines as t1 join flights as t2 on t1.uid = t2.airport
+select flightno from flights where airline = "JetBlue"
+select flightno from flights where flightno = "JetBlue"
 select flightno from flights where sourceairport = "APG"
 select flightno from flights where destairport = "APG"
-select flightno from flights as t1 join airports as t2 on t2.city = t2.city where t2.airportcode = "APG"
-select flightno from flights where flightno = "APG"
+select flightno from flights where sourceairport = "APG"
+select flightno from flights where sourceairport = "APG"
 select flightno from flights where flight
 select flightno from flights where destairport = "Michael"
 select flightno from flights as t1 join flights as t2 on t1.f
@@ -264,10 +264,10 @@ select document_id, document_name, document_description from documents
 select document_id from documents where document_description like '%w%'
 select document_name, template_id from documents where document_name like '%w%'
 select document_description, template_id from documents where document_name = "Robbin CV"
-select document_description, document_id from documents where document_name = "Robbin CV"
+select document_description, template_id from documents where document_name = "Robbin CV"
 select count(distinct template_id) from documents
 select count(distinct template_id) from documents
-select count(*) from documents where template_type_code = (select template_type_code from documents
+select count(*) from templates where template_type_code = "PPT"
 select count(*) from templates where template_type_code = "PPT"
 select template_id, count(*) from documents group by template_id
 select template_id, count(*) from documents group by template_id
@@ -283,7 +283,7 @@ select date_effective_from, template_type_code from templates
 select date_effective_from, template_type_code from templates
 select date_effective_to from templates
 select date_effective_from from templates
-select date_effective_from from templates where template_type_code = "PP" or template_type_code = "PPT"
+select date_effective_to from templates where template_type_code = 'PP' or template_type_code = 'PPT'
 select date_effective_from from templates where template_type_code = 'PP' or template_type_code = 'PPT'
 select date_effective_to from templates where template_type_code = "CV"
 select date_effective_to from templates where template_type_code = "CV"
@@ -297,10 +297,10 @@ select date_effective_to from templates group by date_effective_to having count(
 select date_effective_to from templates group by date_effective_to having count(*) < 3
 select min(date_effective_from), date_effective_to from templates group by date_effective_from
 select min(date_effective_from), date_effective_to from templates group by date_effective_from
-select t2.date_effective_to from documents as t1 join templates as t2 on t1.document_id = t2.date_effective_from where t1.document_name = "Data base"
-select t2.date_effective_to from documents as t1 join templates as t2 on t1.document_id = t2.document_id
-select t1.document_name, t1.document_name, t1.document_id from documents as t1 join templates as t2 on t1.document_id = t2.document_id
-select t1.document_name, t1.document_id from documents as t1 join templates as t2 on t1.document_id = t2.document_id
+select t1.date_effective_to from templates as t1 join documents as t2 on t1.
+select 'Datenbase' from documents where document_name = "Data base"
+select t1.document_name, t1.document_description, t1.document_id from documents as t1 join templates as t2 on t1.document_id = t2.document_id
+select document_name, template_id from documents where template_id in ( select template_id from templates where template_type_code = "BK")
 select t1.date_effective_from, t1.date_effective_to, count(*) from templates as t1 join documents as t2 on t1.date_effective_from = t2.document_id group by t1.date_effective_to
 select t1.date_effective_from, t1.date_effective_to, count(*) from templates as t1 join documents as t2 on t1.date_effective_from = t2.document_id group by t1.date_effective_to
 Select t1.date_effective_from, t1.date_effective_to from templates as t1 join documents as t2 on t2.document_id = t2.document_id group by t1.date_effective_to order by count(*) desc limit 1
@@ -315,8 +315,8 @@ select template_type_code from ref_template_types where template_type_descriptio
 select template_type_code from ref_template_types where template_type_description = "Book"
 select distinct template_type_description from ref_template_types
 select distinct template_type_description from templates
-select date_effective_from from templates where template_type_description = "Presentation" and date_effective_to >= (select template_type_code from templates
-select t1.date_effective_to from templates as t1 join templates as t2 on t1.
+select date_effective_to from templates where template_type_description like "%presentation%
+select date_effective_to from templates where template_type_description like '%presentation%' 
 select t1.first_name, t1.last_name, count(*) from players as t1 join matches as t2 on t1.player_id = t2.player_id
 select t1.first_name, t1.last_name, count(*) from players as t1 join matches as t2 on t1.player_id = t2.player_id
 select t1.year, t1.winner_age from matches as t1 join players as t2 on t1.winner_id = t2.player_id group by t1.winner_age
@@ -334,27 +334,27 @@ select count(distinct country_code) from players
 select count(distinct t1.first_name), t1.last_name from players as t1 join rankings as t2 on t1.player_id = t2.player_id
 select count(distinct loser_name) from matches
 select tourney_name from matches group by tourney_name having count(*) > 10
-select t1.first_name, t1.last_name from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t1.player_id having count(*) > 10
+select t1.first_name from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t2.player_id having count(*) > 10
 select t3.first_name, t3.last_name from matches as t1 join matches as t2 on t1.loser_id = t2.loser_id join players as t3 on t1.winner_id = t3.player_id where t1.year = 2013 intersect select t3.winner_name, t3.winner_name from matches as t1 join matches as t2 on t1.winner_id = t2.winner_id
 select t3.first_name, t3.last_name from matches as t1 join matches as t2 on t1.loser_id = t2.loser_id join players as t3 on t1.winner_id = t3.player_id where t1.year = 2013 intersect select t3.winner_name, t3.winner_name from matches as t1 join matches as t2 on t1.winner_id = t2.winner_id
 select t1.first_name, t1.last_name from players as t1 join matches as t2 on t1.player_id = 1
 select t1.winner_name, t2.loser_name from matches as t1 join matches as t2 on t1.winner_id = t2.winner_id where t1.year = 2013 or t1.year = 2016
-select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id where t2.winner_rank = 'Australian Open' intersect select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id where t2.winner_rank = 'WTA Championships'
-select t1.first_name, t1.country_code from players as t1 join matches as t2 on t1.player_id = t2.player_id
+select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id where t2.winner_name = "Australian Open" intersect select t1.country_code, t1.first_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id where t2.winner_name = 'WTA Championships'
+select t1.first_name, t1.country_code from players as t1 join rankings as t2 on t1.player_id = t2.player_id where
 select first_name, country_code from players order by birth_date desc limit 1
 select first_name, country_code from players order by birth_date desc limit 1
 select first_name, last_name from players order by birth_date
 select first_name, last_name from players order by birth_date desc
-select first_name, last_name from players where birth_date between (select max(birth_date) from players) and min(birth_date)
-select first_name, last_name from players order by birth_date
+select first_name, last_name from players where hand = 'L' order by birth_date desc
+select first_name from players where first_name = 'Full' order by birth_date
 select t1.first_name, t1.country_code from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t2.player_id order by count(*) desc limit 1
 select t1.first_name, t1.country_code from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t2.player_id order by count(*) desc limit 1
 select year from matches group by year order by count(*) desc limit 1
 select year from matches group by year order by count(*) desc limit 1
 select t1.first_name, count(*) from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t2.player_id order by count(*) desc limit 1
 select t1.first_name, t1.last_name, count(*) from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t2.player_id order by count(*) desc limit 1
-select t2.player_id, t2.winner_rank, t2.winner_rank from matches as t1 join
-select t2.winner_name, t2.loser_name from matches as t1 join matches as t2 on t1.winner_id = t2.winner_id where t1.winner_rank = (select min(winner_rank) from matches where tourney_name = "Australian Open") and t1.winner_rank = (select max(winner_rank) from matches where tourney_name = "Augly_rank")
+select t3.winner_name, t3.winner_rank from players as t1 join matches as t2 on t1.player_id = t2.winner_id join
+select t3.winner_name, t3.winner_rank from matches as t1 join rankings as t2 on t1.winner_id = t2.winner_id
 select t1.winner_name, t2.loser_name from matches as t1 join matches as t2 on t1.winner_id = t2.winner_id group by t1.winner_name order by count(*) desc limit 1
 select t1.winner_name, t1.loser_name from matches as t1 join matches as t2 on t1.loser_id = t2.loser_id order by t2.year desc limit 1
 select avg(t2.ranking_points), t1.first_name from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t1.player_id
@@ -373,10 +373,10 @@ select year, count(*) from matches group by year
 select year, count(*) from matches group by year
 select t1.first_name, t1.rank
 select t1.first_name, t1.last_name from players as t1 join rankings as t2 on t1.player_id = t2.player_id where t1.birth_date = 3 order by t2.year
-select count(distinct winner_id), tourney_name from matches where tourney_name = 'WTA Championships' intersect select winner_rank from matches where winner_rank = 'L'
-select count(*) from matches as t1 join
-select t1.first_name, t1.last_name from players as t1 join matches as t2 on t1.player_id = t2.winner_id order by t2.winner_rank desc limit 1
-select t1.first_name, t1.last_name, t1.birth_date from players as t1 join rankings as t2 on t1.player_id = t2.player_id group by t2.player_id order by count(*) desc limit 1
+select count(distinct winner_rank) from matches where tourney_name = 'WTA Championships' intersect select winner_rank from matches where winner_id in (select winner_id from matches where tourney_name = 'WTA Championships')
+select count(distinct winner_rank) from matches where tourney_name = 'WTA Championships'
+select t1.first_name, t1.birth_date from players as t1 join rankings as t2 on t1.player_id = t2.player_id order by ranking_points desc limit 1
+select t1.first_name, t1.birth_date from players as t1 join rankings as t2 on t1.player_id = t2.player_id where ranking_points = (select ranking_points from rankings group by ranking_points order by count(*) desc limit 1)
 select hand, count(*) from players group by hand
 select hand, count(*) from players group by hand
 select distinct line_1 from addresses
@@ -417,16 +417,16 @@ select orchestra from orchestra where orchestra_id not in (select orchestra_id f
 select orchestra from orchestra where orchestra_id not in (select orchestra_id from performance)
 select record_company from orchestra where year_of_founded < 2003 or year_of_founded = '2003'
 select record_company from orchestra where year_of_founded > 2003 intersect select record_company from orchestra
-select count(*) from show as t1 join show as t2 on t1.show_id = t2.show_id where t1.result = "Glebe Park"
-select count(*) from show as t1 join show as t2 on t1.show_id = t2.show_id where t1.result = "Glebe Park"
+select count(*) from show where if_first_show = 'Glebe Park'
+select count(*) from show where if_first_show = "Glebe Park"
 select type from performance where performance_id not in (select performance_id from performance) group by type having count(*) > 1
 select type from performance where performance_id not in (select performance_id from show) group by type having count(*) > 1
-select state from professionals intersect select state from owners
+select state from owners intersect select state from professionals
 select state from professionals intersect select state from owners
 select avg(age) from dogs where dog_id not in ( select dog_id from treatments )
 select avg(age) from dogs as t1 join treatments as t2 on t1.dog_id = t2.dog_id
 select t1.professional_id, t1.last_name, t1.cell_number from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id group by t1.professional_id having count(*) > 2
-select t1.professional_id, t1.last_name, t1.home_phone from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id where t1.state = "Indiana" group by t1.professional_id having count(*) > 2
+select t1.professional_id, t1.last_name, t1.cell_number from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id where t1.state = "Indiana" group by t1.professional_id having count(*) > 2
 select name from dogs except select t1.name from dogs as t1 join treatments as t2 on t1.dog_id = t2.dog_id where t2.cost_of_treatment > 1000
 select t1.name from dogs as t1 join treatments as t2 on t1.dog_id = t2.dog_id where t2.cost_of_treatment > 1000
 select first_name from professionals union select first_name from owners except select t1.first_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id
