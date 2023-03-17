@@ -31,10 +31,10 @@
 10 hard pred: select t1.name from singer as t1 join singer_in_concert as t2 on t1.singer_id = t2.singer_id join concert as t3 on t2.co
 10 hard gold: SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014
 
-11 medium pred: select t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid order by t3.age limit 1
+11 medium pred: select t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog' and t3.age = (select min(age) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog')
 11 medium gold: SELECT weight FROM pets ORDER BY pet_age LIMIT 1
 
-12 medium pred: select weight from pets order by weight asc limit 1
+12 medium pred: select t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog' and t3.age = (select min(age) from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t1.pettype = 'dog')
 12 medium gold: SELECT weight FROM pets ORDER BY pet_age LIMIT 1
 
 13 medium pred: select count(*) from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.age > 20
@@ -52,10 +52,10 @@
 17 medium pred: select t1.petid, t1.weight from pets as t1 join has_pet as t2 on t1.petid = t2.petid join student as t3 on t2.stuid = t3.stuid where t3.age > 1
 17 medium gold: SELECT petid ,  weight FROM pets WHERE pet_age  >  1
 
-18 extra pred: select t1.maker from car_makers as t1 join countries as t2 on t1.country
+18 extra pred: select t1.maker from car_makers as t1 join cars_data as t2 on t1.id = t2.country
 18 extra gold: SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';
 
-19 extra pred: select t1.make, t2.year from car_names as t1 join cars_data as t2 on t1.makeid = t2.id order by t2.year limit 1
+19 extra pred: select t1.make, "production" from car_names as t1 join cars_data as t2 on t1.makeid = t2.id order by t2.year limit 1
 19 extra gold: SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);
 
 20 extra pred: select maker, year from car_makers
@@ -103,7 +103,7 @@
 34 extra pred: select t1.name from visitor as t1 join visit as t2 on t1.id = t2.visitor_id join museum as t3 on t2.museum_id = t3.museum_id where t3.open_year < 2009 intersect select t1.name from visitor as t1 join visit as t2 on t1.id = t2.visitor_id join museum as t3 on t2.museum_id = t3.museum_id where t3.open_year > 2011
 34 extra gold: SELECT t1.name FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id JOIN museum AS t3 ON t3.Museum_ID  =  t2.Museum_ID WHERE t3.open_year  <  2009 INTERSECT SELECT t1.name FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id JOIN museum AS t3 ON t3.Museum_ID  =  t2.Museum_ID WHERE t3.open_year  >  2011
 
-35 extra pred: select count(*) from visitor where visitor_id not in ( select visitor_id from visit where open_year > 2010
+35 extra pred: select count(*) from visitor where id not in ( select museum_id from museum where open_year > 2010 );
 35 extra gold: SELECT count(*) FROM visitor WHERE id NOT IN (SELECT t2.visitor_id FROM museum AS t1 JOIN visit AS t2 ON t1.Museum_ID  =  t2.Museum_ID WHERE t1.open_year  >  2010)
 
 36 medium pred: select count(*) from museum where open_year > 2013 or open_year < 2008
@@ -130,7 +130,7 @@
 43 medium pred: select first_name, last_name from players where hand = 'L' order by birth_date
 43 medium gold: SELECT first_name ,  last_name FROM players WHERE hand  =  'L' ORDER BY birth_date
 
-44 medium pred: select first_name, last_name from players order by birth_date
+44 medium pred: select first_name, last_name from players where birth_date like '%birth_date%' order by birth_date
 44 medium gold: SELECT first_name ,  last_name FROM players WHERE hand  =  'L' ORDER BY birth_date
 
 45 hard pred: select year from matches group by year order by count(*) desc limit 1
@@ -157,10 +157,10 @@
 52 medium pred: select t1.first_name, t1.last_name, t2.winner_rank from players as t1 join matches as t2 on t1.player_id = t2.winner_id order by t2.year asc limit 3
 52 medium gold: SELECT DISTINCT winner_name ,  winner_rank FROM matches ORDER BY winner_age LIMIT 3
 
-53 hard pred: select t1.first_name, t1.country_code, t1.birth_date from players as t1 join matches as t2 on t1.player_id = t2.winner_id order by t2.rank
+53 hard pred: select t1.first_name, t1.country_code, t1.birth_date from players as t1 join rankings as t2 on t1.player_id = t2.player_id order by ranking_points desc limit 1
 53 hard gold: SELECT T1.first_name ,  T1.country_code ,  T1.birth_date FROM players AS T1 JOIN matches AS T2 ON T1.player_id  =  T2.winner_id ORDER BY T2.winner_rank_points DESC LIMIT 1
 
-54 hard pred: select t1.first_name, t1.country_code, t1.birth_date from players as t1 join matches as t2 on t1.player_id = t2.winner_id group by t2.winner_id order by count(*) desc limit 1
+54 hard pred: select t1.first_name, t1.country_code, t1.birth_date from players as t1 join matches as t2 on t1.player_id = t2.winner_id group by t2.winner_rank order by count(*) desc limit 1
 54 hard gold: SELECT T1.first_name ,  T1.country_code ,  T1.birth_date FROM players AS T1 JOIN matches AS T2 ON T1.player_id  =  T2.winner_id ORDER BY T2.winner_rank_points DESC LIMIT 1
 
 55 medium pred: select name, date, result from battle
@@ -199,16 +199,16 @@
 66 medium pred: select t2.title, t2.directed_by from cartoon as t1 join cartoon as t2 on t1.id = t2.directed_by order by "air_date"
 66 medium gold: SELECT title ,  Directed_by FROM Cartoon ORDER BY Original_air_date
 
-67 easy pred: tv
+67 easy pred: select air_date from tv_series where episode = "A love of a Lifetime"
 67 easy gold: SELECT Air_Date FROM TV_series WHERE Episode = "A Love of a Lifetime";
 
-68 medium pred: select t1.title, t1.channel from cartoon as t1 join t
+68 medium pred: select title, channel from cartoon where original_air_date = (select max(original_air_date) from cartoon)
 68 medium gold: select production_code ,  channel from cartoon order by original_air_date desc limit 1
 
-69 hard pred: select t2.birth_date from poker_player as t1 join people as t2 on t1.people_id = t2.people_id order by t1.e
+69 hard pred: select t1.birth_date from people as t1 join poker_player as t2 on t1.people_id = t2.people_id order by earnings asc limit 1
 69 hard gold: SELECT T1.Birth_Date FROM people AS T1 JOIN poker_player AS T2 ON T1.People_ID  =  T2.People_ID ORDER BY T2.Earnings ASC LIMIT 1
 
-70 hard pred: select t2.birth_date from poker_player as t1 join people as t2 on t1.people_id = t2.people_id order by t1.e
+70 hard pred: select t1.birth_date from people as t1 join poker_player as t2 on t1.people_id = t2.people_id order by earnings asc limit 1
 70 hard gold: SELECT T1.Birth_Date FROM people AS T1 JOIN poker_player AS T2 ON T1.People_ID  =  T2.People_ID ORDER BY T2.Earnings ASC LIMIT 1
 
 71 medium pred: select name, birth_date from people order by name asc
@@ -229,19 +229,19 @@
 76 medium pred: select count(distinct t1.language) from countrylanguage as t1 join country as t2 on t1.countrycode = t2.code where t2.indepyear < 1930
 76 medium gold: SELECT count(DISTINCT T2.Language) FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE  IndepYear  <  1930 AND T2.IsOfficial  =  "T"
 
-77 medium pred: select count(distinct language) from countrylanguage where
+77 medium pred: select count(t2.language) from country as t1 join countrylanguage as t2 on t2.countrycode = t2.countrycode where t1.indepyear < 1930
 77 medium gold: SELECT count(DISTINCT T2.Language) FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE  IndepYear  <  1930 AND T2.IsOfficial  =  "T"
 
-78 medium pred: select t1.name, t1.name, t1.surfacearea from country as t1 join city as t2 on t1.code = t2.countrycode order by t2.population limit 1
+78 medium pred: select name, indepyear, surfacearea from country order by population limit 1
 78 medium gold: SELECT Name ,  SurfaceArea ,  IndepYear FROM country ORDER BY Population LIMIT 1
 
-79 medium pred: select t1.name, t1.name, t1.surfacearea from country as t1 join city as t2 on t1.code = t2.countrycode order by t2.population limit 1
+79 medium pred: select name, indepyear, surfacearea from country order by population limit 1
 79 medium gold: SELECT Name ,  SurfaceArea ,  IndepYear FROM country ORDER BY Population LIMIT 1
 
-80 medium pred: select t2.name from orchestra as t1 join conductor as t2 on t1.orchest
+80 medium pred: select t3.name from orchestra as t1 join show as t2 on t2.show_id = t2.show_id join conductor as t3 on t2.d
 80 medium gold: SELECT T1.Name FROM conductor AS T1 JOIN orchestra AS T2 ON T1.Conductor_ID  =  T2.Conductor_ID WHERE Year_of_Founded  >  2008
 
-81 medium pred: select t2.name from orchestra as t1 join conductor as t2 on t1.d
+81 medium pred: select t2.name from orchestra as t1 join conductor as t2 on t1.
 81 medium gold: SELECT T1.Name FROM conductor AS T1 JOIN orchestra AS T2 ON T1.Conductor_ID  =  T2.Conductor_ID WHERE Year_of_Founded  >  2008
 
 82 hard pred: select record_company from orchestra where year_of_founded < 2003 intersect select record_company from orchestra where year_of_founded > 2003
@@ -304,41 +304,41 @@
                      easy                 medium               hard                 extra                all                 
 count                10                   61                   18                   12                   101                 
 =====================   EXECUTION ACCURACY     =====================
-execution            0.700                0.410                0.611                0.250                0.455               
+execution            0.700                0.426                0.778                0.250                0.495               
 
 ====================== EXACT MATCHING ACCURACY =====================
-exact match          0.500                0.443                0.611                0.250                0.455               
+exact match          0.600                0.475                0.722                0.250                0.505               
 
 ---------------------PARTIAL MATCHING ACCURACY----------------------
-select               0.714                0.796                1.000                1.000                0.845               
-select(no AGG)       1.000                0.815                1.000                1.000                0.881               
-where                1.000                0.692                0.750                0.750                0.759               
-where(no OP)         1.000                0.692                0.750                0.750                0.759               
+select               0.750                0.818                1.000                1.000                0.865               
+select(no AGG)       1.000                0.836                1.000                1.000                0.899               
+where                1.000                0.500                0.750                0.600                0.639               
+where(no OP)         1.000                0.500                0.750                0.800                0.667               
 group(no Having)     0.000                1.000                0.800                1.000                0.941               
 group                0.000                1.000                0.800                1.000                0.941               
-order                0.000                0.625                0.800                0.571                0.605               
-and/or               1.000                0.934                1.000                1.000                0.960               
+order                0.000                0.773                0.750                0.667                0.711               
+and/or               1.000                0.932                1.000                1.000                0.959               
 IUEN                 0.000                0.000                1.000                1.000                0.857               
-keywords             0.667                0.909                0.929                0.556                0.849               
+keywords             0.714                0.848                0.941                0.667                0.835               
 ---------------------- PARTIAL MATCHING RECALL ----------------------
-select               0.500                0.705                0.778                0.750                0.703               
-select(no AGG)       0.700                0.721                0.778                0.750                0.733               
-where                0.571                0.500                0.667                0.300                0.500               
-where(no OP)         0.571                0.500                0.667                0.300                0.500               
+select               0.600                0.738                0.944                0.750                0.762               
+select(no AGG)       0.800                0.754                0.944                0.750                0.792               
+where                0.714                0.500                0.667                0.300                0.523               
+where(no OP)         0.714                0.500                0.667                0.400                0.545               
 group(no Having)     0.000                1.000                1.000                1.000                1.000               
 group                0.000                1.000                1.000                1.000                1.000               
-order                0.000                0.536                0.500                1.000                0.575               
-and/or               1.000                1.000                1.000                0.917                0.990               
+order                0.000                0.607                0.750                1.000                0.675               
+and/or               1.000                0.965                1.000                0.917                0.969               
 IUEN                 0.000                0.000                1.000                0.500                0.857               
-keywords             0.571                0.769                0.722                0.417                0.697               
+keywords             0.714                0.750                0.889                0.500                0.742               
 ---------------------- PARTIAL MATCHING F1 --------------------------
-select               0.588                0.748                0.875                0.857                0.768               
-select(no AGG)       0.824                0.765                0.875                0.857                0.800               
-where                0.727                0.581                0.706                0.429                0.603               
-where(no OP)         0.727                0.581                0.706                0.429                0.603               
+select               0.667                0.776                0.971                0.857                0.811               
+select(no AGG)       0.889                0.793                0.971                0.857                0.842               
+where                0.833                0.500                0.706                0.400                0.575               
+where(no OP)         0.833                0.500                0.706                0.533                0.600               
 group(no Having)     1.000                1.000                0.889                1.000                0.970               
 group                1.000                1.000                0.889                1.000                0.970               
-order                1.000                0.577                0.615                0.727                0.590               
-and/or               1.000                0.966                1.000                0.957                0.975               
+order                1.000                0.680                0.750                0.800                0.692               
+and/or               1.000                0.948                1.000                0.957                0.964               
 IUEN                 1.000                1.000                1.000                0.667                0.857               
-keywords             0.615                0.833                0.813                0.476                0.765               
+keywords             0.714                0.796                0.914                0.571                0.786               
