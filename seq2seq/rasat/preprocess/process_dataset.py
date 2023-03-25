@@ -59,7 +59,7 @@ def init_dataset_path(data_base_dir, dataset_name, mode):
             raise NotImplementedError
         # dataset_output_path_base=os.path.join(data_base_dir, "preprocessed_dataset", dataset_name, "train.bin")
     elif mode == "dev": 
-        if dataset_name in ["spider", "sparc"] :
+        if dataset_name in ["spider", "sparc", "spider_desc"] :
             dataset_path=os.path.join(data_base_dir, "ori_dataset", dataset_name, "dev.json")
         elif dataset_name == "cosql":
             db_dir = os.path.join(data_base_dir, "ori_dataset", "cosql_dataset", "database")
