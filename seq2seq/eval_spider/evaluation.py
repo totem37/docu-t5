@@ -479,6 +479,7 @@ class Evaluator:
         self.schemas = {}
 
         self.scores = {}
+        self.invalid_count = 0
 
         for turn in TURNS:
             self.scores[turn] = {"count": 0, "exact": 0.0}
@@ -667,6 +668,7 @@ class Evaluator:
                     "union": None,
                     "where": [],
                 }
+                self.invalid_count += 1
 
         current_pred = predicted[:]
 
@@ -757,6 +759,7 @@ class Evaluator:
         return result
 
     def finalize(self):
+        print(f"Invalid SQL count: {self.invalid_count}")
         scores = self.scores
         for turn in TURNS:
             if scores[turn]["count"] == 0:
@@ -824,7 +827,7 @@ def print_formated_s(row_name, l, element_format):
     print(template.format(row_name, *l))
 
 
-def print_scores(scores, etype, include_turn_acc=True):
+def print_scores(scores, etype, include_turn_acc=True):    
     turns = TURNS
     levels = ["easy", "medium", "hard", "extra", "all"]
     if include_turn_acc:
