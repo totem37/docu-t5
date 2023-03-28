@@ -75,9 +75,9 @@ select pettype, avg(weight) from pets group by pettype _EX _EM
 select pettype, avg(weight) from pets group by pettype _EX _EM
 select fname, age from student where stuid in (select stuid from has_pet) _EX
 select distinct t1.fname, t1.age from student as t1 join has_pet as t2 on t1.stuid = t2.stuid _EX _EM
-select t2.petid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.lname = 'Smith'
-select t2.petid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.lname = 'Smith'
-select count(*), stuid from has_pet group by stuid
+select t2.petid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.lname = 'Smith' _EX
+select t2.petid from has_pet as t1 join pets as t2 on t1.petid = t2.petid join student as t3 on t1.stuid = t3.stuid where t3.lname = 'Smith' _EX
+select count(*), stuid from has_pet group by stuid _EX
 select t1.stuid, count(*) from student as t1 join has_pet as t2 on t1.stuid = t2.stuid group by t1.stuid _EX _EM
 select t1.fname, t1.sex from student as t1 join has_pet as t2 on t1.stuid = t2.stuid group by t2.stuid having count(*) > 1 _EX _EM
 select t1.fname, t1.sex from student as t1 join has_pet as t2 on t1.stuid = t2.stuid group by t2.stuid having count(*) > 1 _EX _EM
@@ -147,7 +147,7 @@ select count(*) from cars_data where year = 1980 _EX _EM
 select count(*) from cars_data where year = 1980 _EX _EM
 select count(*) from car_makers as t1 join model_list as t2 on t1.id = t2.maker where t1.fullname = "American motor Company" _EM
 select count(*) from car_makers as t1 join model_list as t2 on t1.id = t2.maker where t1.fullname = "American motor Company" _EM
-select t2.fullname, t1.maker from model_list as t1 join car_makers as t2 on t1.maker = t2.id group by t1.maker having count(*) > 3 _EM
+select t2.fullname, t1.maker from model_list as t1 join car_makers as t2 on t1.maker = t2.id group by t1.maker having count(*) > 3 _EX _EM
 select t1.fullname, t1.maker from car_makers as t1 join model_list as t2 on t1.id = t2.maker group by t1.maker having count(*) > 3
 select distinct model from model_list as t1 join car_makers as t2 on t1.maker = t2.id where t2.fullname = 'General Motors' or t1.we
 select distinct model from model_list as t1 join car_makers as t2 on t1.maker = t2.id where t2.fullname = "General Motors" union select distinct model from model_list as t1 join cars_data as t2 on t1.model = t2.id where t2.weight > 3500
@@ -309,8 +309,8 @@ select count(*) from documents as t1 join templates as t2 on t1.template_id = t2
 select count(*) from templates as t1 join documents as t2 on t1.template_id = t2.template_id where t1.template_type_code = "PPT" _EX _EM
 select template_id, count(*) from documents group by template_id _EX _EM
 select template_id, count(*) from documents group by template_id _EX _EM
-select t1.template_id, t1.template_type_code from templates as t1 join documents as t2 on t1.template_id = t2.template_id group by t1.template_id order by count(*) desc limit 1 _EM
-select t1.template_id, t1.template_type_code from templates as t1 join documents as t2 on t1.template_id = t2.template_id group by t1.template_id order by count(*) desc limit 1 _EM
+select t1.template_id, t1.template_type_code from templates as t1 join documents as t2 on t1.template_id = t2.template_id group by t1.template_id order by count(*) desc limit 1 _EX _EM
+select t1.template_id, t1.template_type_code from templates as t1 join documents as t2 on t1.template_id = t2.template_id group by t1.template_id order by count(*) desc limit 1 _EX _EM
 select template_id from documents group by template_id having count(*) > 1 _EX _EM
 select template_id from documents group by template_id having count(*) > 1 _EX _EM
 select template_id from templates except select template_id from documents _EX _EM
@@ -371,8 +371,8 @@ select document_id, document_name, count(*) from documents group by document_id
 select document_id, document_name, count(*) from documents group by document_id
 select document_id from paragraphs group by document_id having count(*) >= 2 _EX _EM
 select document_id from paragraphs group by document_id having count(*) >= 2 _EX _EM
-select t1.document_id, t1.document_name from documents as t1 join paragraphs as t2 on t1.document_id = t2.document_id group by t1.document_id order by count(*) desc limit 1 _EM
-select t1.document_id, t1.document_name from documents as t1 join paragraphs as t2 on t1.document_id = t2.document_id group by t1.document_id order by count(*) desc limit 1 _EM
+select t1.document_id, t1.document_name from documents as t1 join paragraphs as t2 on t1.document_id = t2.document_id group by t1.document_id order by count(*) desc limit 1 _EX _EM
+select t1.document_id, t1.document_name from documents as t1 join paragraphs as t2 on t1.document_id = t2.document_id group by t1.document_id order by count(*) desc limit 1 _EX _EM
 select document_id from paragraphs group by document_id order by count(*) asc limit 1 _EX _EM
 select document_id from paragraphs group by document_id order by count(*) asc limit 1 _EX _EM
 select document_id from paragraphs group by document_id having count(*) between 1 and 2 _EX _EM
@@ -419,7 +419,7 @@ select open_year, num_of_staff from museum where name = 'Plaza Museum' _EX _EM
 select name from museum where num_of_staff > (select min(num_of_staff) from museum where open_year > 2010) _EX _EM
 select t1.id, t1.name, t1.age from visitor as t1 join visit as t2 on t1.id = t2.visitor_id group by t1.id having count(*) > 1 _EX _EM
 select t1.id, t1.name, t1.level_of_membership from visitor as t1 join visit as t2 on t1.id = t2.visitor_id group by t1.id order by sum(t2.total_spent) desc limit 1 _EM
-select t1.museum_id, t1.name from museum as t1 join visit as t2 on t1.museum_id = t2.museum_id group by t2.museum_id order by count(*) desc limit 1 _EM
+select t1.museum_id, t1.name from museum as t1 join visit as t2 on t1.museum_id = t2.museum_id group by t2.museum_id order by count(*) desc limit 1 _EX _EM
 select name from museum where museum_id not in (select museum_id from visit) _EX _EM
 select t1.name, t1.age from visitor as t1 join visit as t2 on t1.id = t2.visitor_id group by t2.visitor_id order by sum(t2.num_of_ticket) desc limit 1 _EX
 select avg(num_of_ticket), max(num_of_ticket) from visit _EX _EM
@@ -513,8 +513,8 @@ select course_description from courses where course_name = "math" _EX _EM
 select course_description from courses where course_name = "math" _EX _EM
 select zip_postcode from addresses where city = "Port Chelsea" _EX _EM
 select zip_postcode from addresses where city = "Port Chelsea" _EX _EM
-select t2.department_name, t2.department_id from degree_programs as t1 join departments as t2 on t1.department_id = t2.department_id group by t2.department_id order by count(*) desc limit 1 _EM
-select t2.department_name, t2.department_id from degree_programs as t1 join departments as t2 on t1.department_id = t2.department_id group by t2.department_id order by count(*) desc limit 1 _EM
+select t2.department_name, t2.department_id from degree_programs as t1 join departments as t2 on t1.department_id = t2.department_id group by t2.department_id order by count(*) desc limit 1 _EX _EM
+select t2.department_name, t2.department_id from degree_programs as t1 join departments as t2 on t1.department_id = t2.department_id group by t2.department_id order by count(*) desc limit 1 _EX _EM
 select count(distinct department_id) from degree_programs _EX _EM
 select count(distinct department_id) from degree_programs _EX _EM
 select count(distinct degree_summary_name) from degree_programs _EX _EM
@@ -549,8 +549,8 @@ select t1.course_name from courses as t1 join student_enrolment_courses as t2 on
 select t1.course_name from courses as t1 join student_enrolment_courses as t2 on t1.course_id = t2.course_id group by t1.course_id order by count(*) desc limit 1
 select t1.last_name from students as t1 join student_enrolment as t2 on t1.student_id = t2.student_id join addresses as t3 on t1.current_address_id = t3.address_id where t3.state_province_county = "North Carolina"
 select t2.last_name from addresses as t1 join students as t2 on t1.address_id = t2.current_address_id except select t2.last_name from addresses as t3 join student_enrolment as t4 on t3.address_id = t4.student_id join degree_programs as t5 on t4.degree_program_id = t5.degree_program_id join student_enrolment as t6 on t2.student_id = t3.student_id
-select t1.transcript_date, t1.transcript_id from transcripts as t1 join transcript_contents as t2 on t1.transcript_id = t2.transcript_id group by t1.transcript_id having count(*) >= 2 _EM
-select t1.transcript_date, t1.transcript_id from transcripts as t1 join transcript_contents as t2 on t1.transcript_id = t2.transcript_id group by t1.transcript_id having count(*) >= 2 _EM
+select t1.transcript_date, t1.transcript_id from transcripts as t1 join transcript_contents as t2 on t1.transcript_id = t2.transcript_id group by t1.transcript_id having count(*) >= 2 _EX _EM
+select t1.transcript_date, t1.transcript_id from transcripts as t1 join transcript_contents as t2 on t1.transcript_id = t2.transcript_id group by t1.transcript_id having count(*) >= 2 _EX _EM
 select cell_mobile_number from students where first_name = "Timmothy" and last_name = "Ward" _EX _EM
 select cell_mobile_number from students where first_name = "Timmothy" and last_name = "Ward" _EM
 select first_name, middle_name, last_name from students order by date_first_registered desc limit 1
@@ -572,7 +572,7 @@ select transcript_date from transcripts order by transcript_date desc limit 1 _E
 select count(*), t1.course_id from student_enrolment_courses as t1 join transcript_contents as t2 on t1.course_id = t2.student_course_id group by t1.course_id
 select t1.course_id, count(*) from courses as t1 join transcript_contents as t2 on t1.course_id = t2.course_id
 select transcript_date, transcript_id from transcripts group by transcript_id order by count(*) asc limit 1
-select t1.transcript_date, t1.transcript_id from transcripts as t1 join transcript_contents as t2 on t1.transcript_id = t2.transcript_id group by t1.transcript_id order by count(*) asc limit 1 _EM
+select t1.transcript_date, t1.transcript_id from transcripts as t1 join transcript_contents as t2 on t1.transcript_id = t2.transcript_id group by t1.transcript_id order by count(*) asc limit 1 _EX _EM
 select t1.semester_name from semesters as t1 join student_enrolment as t2 on t1.semester_id = t2.semester_id join degree_programs as t3 on t2.degree_program_id = t3.degree_program_id where t3.degree_summary_name = 'Master' intersect select t1.se
 select semester_id from student_enrolment where degree_program_id = "Masters" intersect select semester_id from student_enrolment where degree_program_id = "Bachelors"
 select count(distinct current_address_id) from students _EX _EM
@@ -928,8 +928,8 @@ select first_name from professionals union select first_name from owners except 
 select first_name from professionals union select first_name from owners except select t2.first_name from dogs as t1 join professionals as t2 on t1.dog_id = t2.professional_id
 select professional_id, role_code, email_address from professionals except select t1.professional_id, t1.role_code, t1.email_address from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id _EX _EM
 select professional_id, role_code, email_address from professionals except select t1.professional_id, t1.role_code, t1.email_address from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id _EX _EM
-select t1.owner_id, t1.first_name, t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id group by t1.owner_id order by count(*) desc limit 1 _EM
-select t1.owner_id, t1.first_name, t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id group by t1.owner_id order by count(*) desc limit 1 _EM
+select t1.owner_id, t1.first_name, t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id group by t1.owner_id order by count(*) desc limit 1 _EX _EM
+select t1.owner_id, t1.first_name, t1.last_name from owners as t1 join dogs as t2 on t1.owner_id = t2.owner_id group by t1.owner_id order by count(*) desc limit 1 _EX _EM
 select t1.professional_id, t1.role_code, t1.first_name from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id group by t1.professional_id having count(*) >= 2 _EX _EM
 select t1.professional_id, t1.role_code, t1.first_name from professionals as t1 join treatments as t2 on t1.professional_id = t2.professional_id group by t1.professional_id having count(*) >= 2 _EX _EM
 select t1.breed_name from breeds as t1 join dogs as t2 on t1.breed_code = t2.breed_code group by t2.breed_code order by count(*) desc limit 1 _EX
