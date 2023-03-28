@@ -759,7 +759,10 @@ class Evaluator:
         return result
 
     def finalize(self):
-        print(f"Invalid SQL count: {self.invalid_count}")
+        instance_count = sum([self.scores[level]["count"] for level in ["easy", "medium", "hard", "extra"]])
+        print(f"Invalid SQL count:                      {self.invalid_count}")
+        print(f"Invalid SQL percentage of predictions:  {100 * float(self.invalid_count / instance_count):.1f} %")
+        print()
         scores = self.scores
         for turn in TURNS:
             if scores[turn]["count"] == 0:

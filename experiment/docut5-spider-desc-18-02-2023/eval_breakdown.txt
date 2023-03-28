@@ -3100,6 +3100,9 @@
 1033 hard pred: select property_name from properties where property_type_code = "House" or room_count > 1
 1033 hard gold: SELECT property_name FROM Properties WHERE property_type_code  =  "House" UNION SELECT property_name FROM Properties WHERE property_type_code  =  "Apartment" AND room_count  >  1
 
+Invalid SQL count:                      57
+Invalid SQL percentage of predictions:  5.5 %
+
                      easy                 medium               hard                 extra                all                 
 count                248                  446                  174                  166                  1034                
 =====================   EXECUTION ACCURACY     =====================

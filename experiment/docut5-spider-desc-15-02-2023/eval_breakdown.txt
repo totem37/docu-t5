@@ -3100,6 +3100,9 @@
 1033 hard pred: select t1.property_name from properties as t1 join properties as t2 on t1.property_id = t2.property_id where t1.property_type_code = "Haus" or t1.property_type_code = "Apartment" group by t1.property_type_code having count(*) > 1
 1033 hard gold: SELECT property_name FROM Properties WHERE property_type_code  =  "House" UNION SELECT property_name FROM Properties WHERE property_type_code  =  "Apartment" AND room_count  >  1
 
+Invalid SQL count:                      170
+Invalid SQL percentage of predictions:  16.4 %
+
                      easy                 medium               hard                 extra                all                 
 count                248                  446                  174                  166                  1034                
 =====================   EXECUTION ACCURACY     =====================
