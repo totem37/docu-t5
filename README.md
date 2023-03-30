@@ -1,18 +1,20 @@
 
-# E-commerce data assistant: Injecting knowledge in seq2seq SQL generation
+# Combining Schema Descriptions and Relational Embeddings to Improve Text-to-SQL Models
 
 This code is based on:
 
 ```bibtex
-@inproceedings{Scholak2021:PICARD,
-  author = {Torsten Scholak and Nathan Schucher and Dzmitry Bahdanau},
-  title = "{PICARD}: Parsing Incrementally for Constrained Auto-Regressive Decoding from Language Models",
-  booktitle = "Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing",
-  month = nov,
-  year = "2021",
-  publisher = "Association for Computational Linguistics",
-  url = "https://aclanthology.org/2021.emnlp-main.779",
-  pages = "9895--9901",
+@misc{soare_docut5_2022,
+	title = {{DocuT5}: {Seq2seq} {SQL} {Generation} with {Table} {Documentation}},
+	shorttitle = {{DocuT5}},
+	url = {http://arxiv.org/abs/2211.06193},
+	urldate = {2022-11-14},
+	publisher = {arXiv},
+	author = {Soare, Elena and Mackie, Iain and Dalton, Jeffrey},
+	month = nov,
+	year = {2022},
+	note = {arXiv:2211.06193 [cs]},
+	keywords = {Computer Science - Computation and Language},
 }
 ```
 
@@ -151,6 +153,10 @@ pip install stanza
 python seq2seq/rasat/stanza_downloader.py
 unzip seq2seq/rasat/preprocessed_dataset.zip -d ./dataset_files/
 ```
+
+### Other Scripts
+
+The other_scripts folder contains other miscellaneous scripts used outwith this repository.
 
 ### Serving
 
