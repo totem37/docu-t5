@@ -1,5 +1,5 @@
 
-# Combining Schema Descriptions and Relational Embeddings to Improve Text-to-SQL Models
+# Improving Text-to-SQL Models with Schema Descriptions and Relational Embeddings
 
 This code is based on:
 
@@ -21,7 +21,7 @@ This code is based on:
 ### Prerequisites
 
 This repository uses git submodules. Clone it like this:
-```sh
+```
 git clone --recurse-submodules https://github.com/totem37/docu-t5.git
 ```
 
@@ -41,41 +41,65 @@ Pull the DocuT5 Docker image with:
 make pull-eval-image
 ```
 
-Alternatively, you can build the DocuT5 image from scratch. This is necessary if changes have been made to the model. To do this run:
+Alternatively, you can build the DocuT5 image from scratch. This is necessary if changes have been made to the environment. To do this run:
 ```
 make build-eval-image
 ```
 
-### Training
-
-The training script is located in `seq2seq/run_seq2seq.py`.
+### Config Files
 
 Configuration files are located in `configs/`.
+
+To change the dataset, change the option "dataset" to e.g. "spider".
+
+To change the model, change the option "model_name_or_path" to e.g. "totem37/DocuT5-Small-SD".
+
+To enable Foreign Keys Serialization, set the option "schema_serialization_with_foreign_keys" to true.
+
+To enable Schema Augumentation, set the option "schema_serialization_with_db_description" to true.
+
+If you get out of memory errors, decrease the number in "per_device_train_batch_size" or "per_device_eval_batch_size".
+
+### RASAT
+
+If using RASAT or DocuT5-RASAT, ensure these lines are in your config file:
+```
+"use_rasat": true,
+"data_base_dir": "dataset_files",
+"split_dataset": "spider",
+"use_dependency": true
+```
+
+Before running the training/evaluation script, run the following commands:
+```
+pip install stanza
+python seq2seq/rasat/stanza_downloader.py
+unzip seq2seq/rasat/preprocessed_dataset.zip -d ./dataset_files/
+```
+
+### Training
+
+The training script is `seq2seq/run_seq2seq.py`.
 
 Run training with:
 ```
 make train
 ```
+
 This puts you in a Docker image, in which you can run:
 ```
 python seq2seq/run_seq2seq.py configs/train.json
 ```
+
 Replace `train.json` with whatever config file you want to run.
-
-The model will be trained on the Spider dataset by default. 
-
-To run it on Datasaur, change in configs/train.json the field 'model-name-or-path' to 'datasaur'
-
-To enable Foreign Keys Serialization, set in the same config file to 'schema_serialization_with_foreign_keys' to true
-
-To enable Schema Augumentation, set in the same config file to 'schema_serialization_with_db_description' to true
 
 For long runs, run the training in the background with:
 ```
 wandb login
 nohup python seq2seq/run_seq2seq.py configs/train.json &
 ```
-This logs output to `nohup.out`. You can exit the Docker container and close the terminal if you use nohup.
+
+This logs output to `nohup.out`. You can exit the Docker container with Ctrl-P then Ctrl-Q and close the terminal if you use nohup.
 
 To re-enter the last exited Docker container run:
 ```
@@ -104,89 +128,35 @@ python push.py [MODEL_NAME]
 
 ### Evaluation
 
-The evaluation script is located in `seq2seq/run_seq2seq.py`.
-
-Configuration files are located in `configs/`.
+The evaluation script is `seq2seq/run_seq2seq.py`.
 
 Run evaluation with:
 ```
 make eval
 ```
+
 This puts you in a Docker image, in which you can run:
 ```
 python seq2seq/run_seq2seq.py configs/eval.json
 ```
+
 Replace `eval.json` with whatever config file you want to run.
 
-Pre-trained models are available on HuggingFace at https://huggingface.co/elena-soare.
-
-To enable Foreign Keys Serialization, set "schema_serialization_with_foreign_keys" to true and add the corresponding model to the Huggingface fine-tuned model 'elena-soare/bat-fk-base'
-
-To run the Pre-trained E-commerce model, leave the baseline configurations and set the model name or path to the Huggingface checkpoint 'elena-soare/bat-pre-trained'
-
-To enable Schema Augumentation, set "schema_serialization_with_db_description" to true and the corresponding model to the Huggingface fine-tuned model 'elena-soare/docu-t5-large-SD'
+Pre-trained models are available on HuggingFace at https://huggingface.co/elena-soare and https://huggingface.co/totem37.
 
 For long runs, run the evaluation in the background with:
 ```
 wandb login
 nohup python seq2seq/run_seq2seq.py configs/eval.json &
 ```
-This logs output to `nohup.out`. You can exit the Docker container and close the terminal if you use nohup.
+
+This logs output to `nohup.out`. You can exit the Docker container with Ctrl-P then Ctrl-Q and close the terminal if you use nohup.
 
 To re-enter the last exited Docker container run:
 ```
 docker start `docker ps -q -l` && docker attach `docker ps -q -l`
 ```
 
-### RASAT
-
-If using RASAT, ensure these lines are in your config file:
-```
-"use_rasat": true,
-"data_base_dir": "dataset_files",
-"split_dataset": "spider"
-```
-
-Before running the training/evaluation script, run the following commands:
-```
-pip install stanza
-python seq2seq/rasat/stanza_downloader.py
-unzip seq2seq/rasat/preprocessed_dataset.zip -d ./dataset_files/
-```
-
 ### Other Scripts
 
 The other_scripts folder contains other miscellaneous scripts used outwith this repository.
-
-### Serving
-
-A trained model can be served using the `seq2seq/serve_seq2seq.py` script.
-
-The configuration file can be found in `configs/serve.json`.
-
-You can start serving with:
-```
-make serve
-```
-
-### Pre-training Script
-Pre-training script is located in /picard/pre-training/script.ipynb. You need to set the file with crawled data (https://huggingface.co/datasets/elena-soare/crawled-ecommerce/blob/main/train.json) within the same directory to run the code.
-
-The files used to crawl e-commerce Common Crawl data are in /picard/pre-training/crawling_data/. To run it, you would need an AWS account, set up AWS Athena columnar index (https://skeptric.com/common-crawl-index-athena/ -> tutorial). And obtain a file with the Authentication Credentials.
-
-Build virtualenv and install requirements:
-```
-pip3 install -r requirements 
-```
-Paste `credentials.csv` into `complex_task_search` parent directory for AWS credentials (region should be `us-east-1` 
-to be co-located with common crawl data). Format:
-```
-Access key ID,Secret access key,staging path,region
-XXX,YYY,ZZZ,us-east-1
-```
-
-The function run_build_corpus() in common_crawl.py should connect to AWS Athena and crawl the data.
-To convert html pages to text and santize the crawled data, you can find the code in html_to_text.py.
-
-
-
